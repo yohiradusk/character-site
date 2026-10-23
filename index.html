@@ -5,28 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ARCHIVE ✳ ORIGINAL & FANART</title>
   
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Noto+Serif+JP:wght@300;400;600&display=swap" rel="stylesheet">
-  <!-- Identity Widget for Netlify -->
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ==========================================================================
+       RESET & BASE STYLES (Monochrome Minimal)
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     :root {
       --bg-main: #09090b;
       --bg-surface: #121215;
+      --bg-surface-hover: #1c1c21;
       --border-color: #27272a;
       --border-light: #3f3f46;
       --text-main: #f4f4f5;
       --text-muted: #a1a1aa;
       --text-dim: #71717a;
       --accent-white: #ffffff;
+      
       --font-serif-en: 'Cormorant Garamond', Georgia, serif;
-      --font-serif-jp: 'Noto Serif JP', serif;
+      --font-serif-jp: 'Noto Serif JP', "Hiragino Mincho ProN", serif;
+      
       --sidebar-width: 300px;
       --transition-smooth: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
     body {
       background-color: var(--bg-main);
       color: var(--text-main);
@@ -36,17 +47,53 @@
       letter-spacing: 0.03em;
       min-height: 100vh;
       display: flex;
+      overflow-x: hidden;
     }
-    a { color: inherit; text-decoration: none; transition: var(--transition-smooth); }
-    button { background: none; border: none; color: inherit; font: inherit; cursor: pointer; }
-    img { max-width: 100%; height: auto; display: block; }
 
-    /* Sidebar */
+    a {
+      color: inherit;
+      text-decoration: none;
+      transition: var(--transition-smooth);
+    }
+
+    button {
+      background: none;
+      border: none;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-main);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--border-light);
+    }
+
+    /* ==========================================================================
+       LAYOUT: SIDEBAR (Left)
+       ========================================================================== */
     .sidebar {
       width: var(--sidebar-width);
       height: 100vh;
       position: fixed;
-      top: 0; left: 0;
+      top: 0;
+      left: 0;
       background-color: var(--bg-main);
       border-right: 1px solid var(--border-color);
       display: flex;
@@ -56,227 +103,789 @@
       z-index: 100;
       overflow-y: auto;
     }
-    .site-title { font-family: var(--font-serif-en); font-size: 2.2rem; font-weight: 300; color: var(--accent-white); }
-    .site-subtitle { font-size: 0.75rem; letter-spacing: 0.15em; color: var(--text-dim); text-transform: uppercase; margin-top: 0.5rem; display: block; margin-bottom: 2rem; }
-    .admin-link { display: block; text-align: center; font-family: var(--font-serif-en); font-size: 0.75rem; letter-spacing: 0.15em; color: var(--text-muted); border: 1px solid var(--border-color); padding: 0.5rem; margin-bottom: 2rem; }
-    .admin-link:hover { color: var(--accent-white); border-color: var(--border-light); background: var(--bg-surface); }
-    
-    .nav-header { border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem; font-family: var(--font-serif-en); font-size: 0.85rem; letter-spacing: 0.2em; color: var(--text-muted); text-transform: uppercase; }
-    .world-list { list-style: none; }
-    .world-link { display: flex; justify-content: space-between; padding: 0.5rem 0.75rem; font-size: 0.85rem; color: var(--text-muted); }
-    .world-link:hover { color: var(--accent-white); background: var(--bg-surface); }
 
-    /* Main Content */
-    .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 4rem 5rem; max-width: 1300px; }
-    .page-section { display: none; }
-    .page-section.active { display: block; }
-    .section-header { margin-bottom: 3.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; }
-    .section-category { font-family: var(--font-serif-en); font-size: 0.85rem; letter-spacing: 0.25em; color: var(--text-dim); text-transform: uppercase; display: block; margin-bottom: 0.5rem; }
-    .section-title { font-family: var(--font-serif-en); font-size: 3rem; font-weight: 300; color: var(--accent-white); }
+    .site-brand {
+      margin-bottom: 2rem;
+    }
 
-    .character-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 2rem; margin-top: 2rem; }
-    .character-card { background: var(--bg-surface); border: 1px solid var(--border-color); cursor: pointer; transition: var(--transition-smooth); }
-    .character-card:hover { border-color: var(--border-light); transform: translateY(-4px); }
-    .character-thumb-wrapper { aspect-ratio: 3/4; overflow: hidden; background: #000; }
-    .character-thumb { width: 100%; height: 100%; object-fit: cover; filter: grayscale(30%); transition: var(--transition-smooth); }
-    .character-card:hover .character-thumb { filter: grayscale(0%); transform: scale(1.04); }
-    .character-info { padding: 1.25rem 1rem; text-align: center; border-top: 1px solid var(--border-color); }
-    .character-name { font-size: 1.05rem; color: var(--accent-white); }
-    .character-ruby { font-family: var(--font-serif-en); font-size: 0.75rem; color: var(--text-dim); letter-spacing: 0.15em; }
+    .site-title {
+      font-family: var(--font-serif-en);
+      font-size: 2.2rem;
+      font-weight: 300;
+      letter-spacing: 0.05em;
+      line-height: 1.1;
+      color: var(--accent-white);
+      display: block;
+    }
 
-    /* Fanart Masonry */
-    .masonry-grid { columns: 3 260px; column-gap: 1.5rem; }
-    .masonry-item { break-inside: avoid; margin-bottom: 1.5rem; background: var(--bg-surface); border: 1px solid var(--border-color); cursor: pointer; }
-    .masonry-img { width: 100%; filter: grayscale(15%); transition: var(--transition-smooth); }
-    .masonry-item:hover .masonry-img { filter: grayscale(0%); }
-    .masonry-caption { padding: 0.8rem 1rem; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; }
+    .site-title span {
+      font-size: 1.2rem;
+      vertical-align: super;
+      margin-left: 2px;
+      color: var(--text-muted);
+    }
 
-    /* Modal */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(9, 9, 11, 0.85); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 2rem; }
-    .modal-overlay.active { opacity: 1; pointer-events: auto; }
-    .modal-container { background: var(--bg-main); border: 1px solid var(--border-light); width: 100%; max-width: 1000px; max-height: 90vh; overflow-y: auto; position: relative; }
-    .modal-close { position: absolute; top: 1.5rem; right: 1.5rem; font-size: 1.5rem; color: var(--text-dim); z-index: 10; width: 40px; height: 40px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; }
-    .chara-modal-body { display: grid; grid-template-columns: 400px 1fr; min-height: 600px; }
-    .chara-visual-area { background: #000; border-right: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; padding: 2rem; }
-    .chara-full-img { max-height: 70vh; object-fit: contain; }
-    .chara-info-area { padding: 3rem 2.5rem; }
-    .chara-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1rem; background: var(--bg-surface); border: 1px solid var(--border-color); margin: 1.5rem 0; font-size: 0.85rem; }
-    .meta-label { font-family: var(--font-serif-en); font-size: 0.7rem; color: var(--text-dim); display: block; }
-    
+    .site-subtitle {
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      margin-top: 0.5rem;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 1.25rem;
+    }
+
+    .admin-trigger-top {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-family: var(--font-serif-en);
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem 1rem;
+      width: 100%;
+      transition: var(--transition-smooth);
+    }
+    .admin-trigger-top:hover {
+      color: var(--accent-white);
+      border-color: var(--border-light);
+      background-color: var(--bg-surface-hover);
+    }
+
+    .nav-section {
+      margin-bottom: 2rem;
+    }
+
+    .nav-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 1rem;
+    }
+
+    .nav-header-title {
+      font-family: var(--font-serif-en);
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .toggle-btn {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      padding: 2px 6px;
+      transition: var(--transition-smooth);
+    }
+    .toggle-btn:hover {
+      color: var(--accent-white);
+    }
+
+    .world-list {
+      list-style: none;
+      max-height: 300px;
+      overflow-y: auto;
+      transition: max-height 0.3s ease, opacity 0.3s ease;
+      padding-right: 5px;
+    }
+
+    .world-list.collapsed {
+      max-height: 0 !important;
+      opacity: 0;
+      overflow: hidden;
+    }
+
+    .world-item {
+      margin-bottom: 0.3rem;
+    }
+
+    .world-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-left: 2px solid transparent;
+    }
+
+    .world-link:hover, .world-link.active {
+      color: var(--accent-white);
+      border-left-color: var(--accent-white);
+      background-color: var(--bg-surface);
+    }
+
+    .world-count {
+      font-family: var(--font-serif-en);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .nav-menu {
+      list-style: none;
+    }
+
+    .nav-menu-item {
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-menu-link {
+      display: block;
+      font-family: var(--font-serif-en);
+      font-size: 1.1rem;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      padding: 0.4rem 0;
+      border-bottom: 1px solid transparent;
+    }
+
+    .nav-menu-link:hover, .nav-menu-link.active {
+      color: var(--accent-white);
+    }
+
+    .sidebar-footer {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      border-top: 1px solid var(--border-color);
+      padding-top: 1.5rem;
+    }
+
+    /* ==========================================================================
+       LAYOUT: MAIN CONTENT AREA
+       ========================================================================== */
+    .main-content {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      min-height: 100vh;
+      padding: 4rem 5rem;
+      max-width: 1300px;
+    }
+
+    .page-section {
+      display: none;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    .page-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-header {
+      margin-bottom: 3.5rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1.5rem;
+    }
+
+    .section-category {
+      font-family: var(--font-serif-en);
+      font-size: 0.85rem;
+      letter-spacing: 0.25em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+      font-family: var(--font-serif-en);
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--accent-white);
+      line-height: 1.1;
+    }
+
+    .section-desc {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      max-width: 700px;
+    }
+
+    /* ==========================================================================
+       COMPONENTS: CHARACTER GRID (3:4 Ratio Vertical Cards)
+       ========================================================================== */
+    .character-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .character-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition-smooth);
+    }
+
+    .character-card:hover {
+      border-color: var(--border-light);
+      transform: translateY(-4px);
+    }
+
+    .character-thumb-wrapper {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      overflow: hidden;
+      background-color: #000;
+      position: relative;
+    }
+
+    .character-thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(30%);
+      transition: var(--transition-smooth);
+    }
+
+    .character-card:hover .character-thumb {
+      filter: grayscale(0%);
+      transform: scale(1.04);
+    }
+
+    .character-info {
+      padding: 1.25rem 1rem;
+      text-align: center;
+      border-top: 1px solid var(--border-color);
+      background-color: var(--bg-surface);
+    }
+
+    .character-name {
+      font-size: 1.05rem;
+      font-weight: 400;
+      color: var(--accent-white);
+      margin-bottom: 0.2rem;
+    }
+
+    .character-ruby {
+      font-family: var(--font-serif-en);
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    /* ==========================================================================
+       COMPONENTS: FANART MASONRY GRID & TABS
+       ========================================================================== */
+    .filter-tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1rem;
+    }
+
+    .filter-btn {
+      font-family: var(--font-serif-en);
+      font-size: 0.95rem;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      padding: 0.4rem 1rem;
+      border: 1px solid transparent;
+      transition: var(--transition-smooth);
+    }
+
+    .filter-btn:hover {
+      color: var(--text-main);
+    }
+
+    .filter-btn.active {
+      color: var(--accent-white);
+      border-color: var(--border-light);
+      background-color: var(--bg-surface);
+    }
+
+    .masonry-grid {
+      columns: 3 260px;
+      column-gap: 1.5rem;
+    }
+
+    .masonry-item {
+      break-inside: avoid;
+      margin-bottom: 1.5rem;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      transition: var(--transition-smooth);
+    }
+
+    .masonry-item:hover {
+      border-color: var(--border-light);
+      transform: translateY(-2px);
+    }
+
+    .masonry-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      filter: grayscale(15%);
+      transition: var(--transition-smooth);
+    }
+
+    .masonry-item:hover .masonry-img {
+      filter: grayscale(0%);
+    }
+
+    .masonry-caption {
+      padding: 0.8rem 1rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .masonry-work {
+      font-family: var(--font-serif-en);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    /* ==========================================================================
+       MODAL SYSTEM (Character Detail & Lightbox)
+       ========================================================================== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(9, 9, 11, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      padding: 2rem;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-container {
+      background-color: var(--bg-main);
+      border: 1px solid var(--border-light);
+      width: 100%;
+      max-width: 1000px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      font-size: 1.5rem;
+      color: var(--text-dim);
+      z-index: 10;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border-color);
+      transition: var(--transition-smooth);
+    }
+
+    .modal-close:hover {
+      color: var(--accent-white);
+      border-color: var(--border-light);
+      background-color: var(--bg-surface);
+    }
+
+    /* Character Modal Content */
+    .chara-modal-body {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      min-height: 600px;
+    }
+
+    .chara-visual-area {
+      background-color: #000;
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+    }
+
+    .chara-full-img {
+      max-height: 70vh;
+      object-fit: contain;
+    }
+
+    .chara-info-area {
+      padding: 3rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Modal Sub-Tabs */
+    .chara-tabs {
+      display: flex;
+      gap: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 2rem;
+    }
+
+    .chara-tab-btn {
+      font-family: var(--font-serif-en);
+      font-size: 0.95rem;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      padding-bottom: 0.75rem;
+      position: relative;
+      transition: var(--transition-smooth);
+    }
+
+    .chara-tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .chara-tab-btn.active {
+      color: var(--accent-white);
+    }
+
+    .chara-tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background-color: var(--accent-white);
+    }
+
+    .chara-tab-content {
+      display: none;
+    }
+
+    .chara-tab-content.active {
+      display: block;
+    }
+
+    .chara-header-info {
+      margin-bottom: 2rem;
+    }
+
+    .chara-title-role {
+      font-family: var(--font-serif-en);
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    .chara-title-name {
+      font-size: 2.2rem;
+      font-weight: 300;
+      color: var(--accent-white);
+      line-height: 1.2;
+    }
+
+    .chara-title-ruby {
+      font-family: var(--font-serif-en);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      letter-spacing: 0.15em;
+    }
+
+    .chara-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding: 1.25rem;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+    }
+
+    .meta-item {
+      font-size: 0.85rem;
+    }
+
+    .meta-label {
+      font-family: var(--font-serif-en);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 0.15em;
+      display: block;
+      margin-bottom: 0.1rem;
+    }
+
+    .meta-value {
+      color: var(--text-main);
+    }
+
+    .chara-quote {
+      font-style: italic;
+      padding: 1rem 1.25rem;
+      border-left: 2px solid var(--border-light);
+      background-color: var(--bg-surface);
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .chara-story {
+      font-size: 0.88rem;
+      line-height: 1.9;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      white-space: pre-wrap;
+    }
+
+    .chara-palette {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: auto;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .palette-label {
+      font-family: var(--font-serif-en);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      letter-spacing: 0.15em;
+    }
+
+    .color-swatch {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 1px solid var(--border-color);
+    }
+
+    /* Chara Modal Gallery Grid */
+    .chara-gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .chara-gallery-item {
+      aspect-ratio: 1;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .chara-gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition-smooth);
+    }
+
+    .chara-gallery-item:hover img {
+      transform: scale(1.05);
+    }
+
+    /* Image Lightbox */
+    .lightbox-img-wrapper {
+      max-width: 85vw;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .lightbox-img {
+      max-width: 100%;
+      max-height: 80vh;
+      object-fit: contain;
+      border: 1px solid var(--border-color);
+    }
+
+    .lightbox-caption {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* ==========================================================================
+       ADMIN CONTROL PANEL (Password Modal & Editor)
+       ========================================================================== */
+    .admin-modal-container {
+      max-width: 750px;
+      padding: 3rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      font-family: var(--font-serif-en);
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+    }
+
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.75rem 1rem;
+      font-family: var(--font-serif-jp);
+      font-size: 0.9rem;
+      transition: var(--transition-smooth);
+    }
+
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--border-light);
+      background-color: var(--bg-surface-hover);
+    }
+
+    .btn-group-admin {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .btn-submit {
+      background-color: var(--accent-white);
+      color: #000;
+      padding: 0.75rem 2rem;
+      font-family: var(--font-serif-en);
+      font-size: 0.9rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      transition: var(--transition-smooth);
+      flex: 1;
+    }
+
+    .btn-submit:hover {
+      background-color: var(--text-muted);
+    }
+
+    .btn-delete {
+      background-color: transparent;
+      border: 1px solid #ef4444;
+      color: #ef4444;
+      padding: 0.75rem 1.5rem;
+      font-family: var(--font-serif-en);
+      font-size: 0.9rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-delete:hover {
+      background-color: #ef4444;
+      color: #ffffff;
+    }
+
+    .admin-tab-nav {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+    }
+
+    .admin-tab-btn {
+      font-family: var(--font-serif-en);
+      font-size: 0.9rem;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      padding: 0.5rem 1rem;
+    }
+
+    .admin-tab-btn.active {
+      color: var(--accent-white);
+      border-bottom: 2px solid var(--accent-white);
+    }
+
+    .export-box {
+      background-color: var(--bg-surface);
+      border: 1px dashed var(--border-light);
+      padding: 1.25rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-export {
+      background-color: var(--bg-surface-hover);
+      border: 1px solid var(--border-light);
+      color: var(--accent-white);
+      padding: 0.6rem 1.2rem;
+      font-family: var(--font-serif-en);
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      transition: var(--transition-smooth);
+    }
+    .btn-export:hover {
+      background-color: var(--accent-white);
+      color: #000;
+    }
+
+    .logout-btn-header {
+      font-family: var(--font-serif-en);
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      border: 1px solid var(--border-color);
+      padding: 0.25rem 0.75rem;
+      transition: var(--transition-smooth);
+    }
+
+    .logout-btn-header:hover {
+      color: #ef4444;
+      border-color: #ef4444;
+    }
+
+    /* Responsive */
     @media (max-width: 900px) {
-      body { flex-direction: column; }
-      .sidebar { width: 100%; height: auto; position: relative; }
-      .main-content { margin-left: 0; padding: 2rem 1.5rem; }
-      .chara-modal-body { grid-template-columns: 1fr; }
-    }
-  </style>
-</head>
-<body>
-
-  <aside class="sidebar">
-    <div>
-      <a href="#home" onclick="showSection('home')">
-        <span class="site-title">oc note✳</span>
-        <span class="site-subtitle">Original Character Archive</span>
-      </a>
-      <a href="/admin/" class="admin-link">[ ✳ MANAGEMENT PANEL ]</a>
-
-      <nav style="margin-bottom:2rem;">
-        <div class="nav-header">Original Worlds</div>
-        <ul class="world-list" id="worldNavList"></ul>
-      </nav>
-
-      <nav>
-        <div class="nav-header">Menu</div>
-        <ul style="list-style:none;">
-          <li><a href="#fanart" onclick="showSection('fanart')" style="font-family:var(--font-serif-en); color:var(--text-muted);">FANART GALLERY</a></li>
-        </ul>
-      </nav>
-    </div>
-    <div style="font-size:0.75rem; color:var(--text-dim); border-top:1px solid var(--border-color); padding-top:1rem;">ARCHIVE VOL. 01</div>
-  </aside>
-
-  <main class="main-content">
-    <section id="sec-home" class="page-section active">
-      <div class="section-header">
-        <span class="section-category">Archive Index</span>
-        <h1 class="section-title">Character Notes</h1>
-      </div>
-      <div id="homeWorldsContainer"></div>
-    </section>
-
-    <section id="sec-world-detail" class="page-section">
-      <div class="section-header">
-        <span class="section-category">World Archive</span>
-        <h1 class="section-title" id="worldDetailTitle">World Name</h1>
-        <p style="color:var(--text-muted); margin-top:1rem;" id="worldDetailDesc"></p>
-      </div>
-      <div class="character-grid" id="worldCharacterGrid"></div>
-    </section>
-
-    <section id="sec-fanart" class="page-section">
-      <div class="section-header">
-        <span class="section-category">Gallery</span>
-        <h1 class="section-title">Fan Art Archive</h1>
-      </div>
-      <div class="masonry-grid" id="fanartGrid"></div>
-    </section>
-  </main>
-
-  <!-- CHARACTER MODAL -->
-  <div class="modal-overlay" id="charaModal">
-    <div class="modal-container">
-      <button class="modal-close" onclick="closeModal('charaModal')">×</button>
-      <div class="chara-modal-body">
-        <div class="chara-visual-area">
-          <img id="modalCharaFullImg" class="chara-full-img" src="" alt="">
-        </div>
-        <div class="chara-info-area">
-          <span id="modalCharaRole" style="font-family:var(--font-serif-en); color:var(--text-dim); text-transform:uppercase; font-size:0.8rem;">ROLE</span>
-          <h2 id="modalCharaName" style="font-size:2.2rem; font-weight:300; color:var(--accent-white);">Name</h2>
-          <span id="modalCharaRuby" style="font-family:var(--font-serif-en); color:var(--text-muted); font-size:0.85rem;">Ruby</span>
-
-          <div class="chara-meta-grid">
-            <div><span class="meta-label">AGE</span><span id="modalCharaAge">-</span></div>
-            <div><span class="meta-label">HEIGHT</span><span id="modalCharaHeight">-</span></div>
-            <div><span class="meta-label">LIKES</span><span id="modalCharaLikes">-</span></div>
-            <div><span class="meta-label">DISLIKES</span><span id="modalCharaDislikes">-</span></div>
-          </div>
-
-          <div id="modalCharaQuote" style="font-style:italic; border-left:2px solid var(--border-light); padding:0.8rem; background:var(--bg-surface); margin-bottom:1.5rem; font-size:0.9rem;"></div>
-          <div id="modalCharaDesc" style="color:var(--text-muted); font-size:0.88rem; white-space:pre-wrap;"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    let siteData = { worlds: [], fanarts: [] };
-
-    async function loadData() {
-      // Netlify Decap CMSから投稿されたデータをAPI経由で取得
-      try {
-        const resWorlds = await fetch('/.netlify/functions/get-worlds').catch(() => null);
-        if (resWorlds && resWorlds.ok) {
-          siteData.worlds = await resWorlds.json();
-        }
-      } catch(e) {}
-      
-      renderApp();
-    }
-
-    function renderApp() {
-      // Sidebar Nav
-      document.getElementById('worldNavList').innerHTML = siteData.worlds.map(w => `
-        <li><a href="#world-${w.id}" class="world-link" onclick="showWorldDetail('${w.id}')"><span>${w.title}</span><span>${w.characters ? w.characters.length : 0}</span></a></li>
-      `).join('');
-
-      // Home Index
-      document.getElementById('homeWorldsContainer').innerHTML = siteData.worlds.map(w => `
-        <div style="margin-bottom:3.5rem;">
-          <h2 style="font-family:var(--font-serif-en); border-bottom:1px solid var(--border-color); padding-bottom:0.5rem; margin-bottom:1.5rem;">${w.title}</h2>
-          <div class="character-grid">
-            ${(w.characters || []).map(c => `
-              <div class="character-card" onclick="openCharaModal('${w.id}', '${c.id}')">
-                <div class="character-thumb-wrapper"><img src="${c.faceImage || ''}" class="character-thumb"></div>
-                <div class="character-info"><div class="character-name">${c.name}</div><div class="character-ruby">${c.ruby || ''}</div></div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function showSection(id) {
-      document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-      document.getElementById('sec-' + id).classList.add('active');
-    }
-
-    function showWorldDetail(worldId) {
-      const w = siteData.worlds.find(item => item.id === worldId);
-      if(!w) return;
-      document.getElementById('worldDetailTitle').textContent = w.title;
-      document.getElementById('worldDetailDesc').textContent = w.description || '';
-      document.getElementById('worldCharacterGrid').innerHTML = (w.characters || []).map(c => `
-        <div class="character-card" onclick="openCharaModal('${w.id}', '${c.id}')">
-          <div class="character-thumb-wrapper"><img src="${c.faceImage || ''}" class="character-thumb"></div>
-          <div class="character-info"><div class="character-name">${c.name}</div><div class="character-ruby">${c.ruby || ''}</div></div>
-        </div>
-      `).join('');
-      showSection('world-detail');
-    }
-
-    function openCharaModal(worldId, charaId) {
-      const w = siteData.worlds.find(item => item.id === worldId);
-      if(!w) return;
-      const c = (w.characters || []).find(item => item.id === charaId);
-      if(!c) return;
-
-      document.getElementById('modalCharaFullImg').src = c.fullImage || c.faceImage;
-      document.getElementById('modalCharaRole').textContent = c.role || '';
-      document.getElementById('modalCharaName').textContent = c.name;
-      document.getElementById('modalCharaRuby').textContent = c.ruby || '';
-      document.getElementById('modalCharaAge').textContent = c.age || '-';
-      document.getElementById('modalCharaHeight').textContent = c.height || '-';
-      document.getElementById('modalCharaLikes').textContent = c.likes || '-';
-      document.getElementById('modalCharaDislikes').textContent = c.dislikes || '-';
-      document.getElementById('modalCharaQuote').textContent = c.quote ? `"${c.quote}"` : '';
-      document.getElementById('modalCharaDesc').textContent = c.description || '';
-
-      document.getElementById('charaModal').classList.add('active');
-    }
-
-    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("init", user => {
-        if (!user) {
-          window.netlifyIdentity.on("login", () => { document.location.href = "/admin/"; });
-        }
-      });
-    }
-
-    loadData();
-  </script>
-</body>
-</html>
+      body {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-
