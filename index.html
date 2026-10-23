@@ -275,7 +275,7 @@
       z-index: 90;
     }
 
-    /* 世界観プロット用リンクボタン（フォント・枠線をトグルボタンと同等に調整） */
+    /* 世界観プロット用リンクボタン */
     .plot-link-btn {
       display: inline-flex;
       align-items: center;
@@ -286,7 +286,6 @@
       color: var(--text-dim);
       border: 0.5px solid var(--border-color);
       padding: 0.3rem 0.8rem;
-      margin-top: 0.8rem;
       transition: var(--transition-smooth);
       background-color: transparent;
     }
@@ -297,16 +296,21 @@
       background-color: var(--bg-surface);
     }
 
-    /* キャラ開閉トグルボタン */
+    /* キャラ開閉トグルボタン（太字化・高さ位置揃え） */
     .chara-toggle-trigger {
       font-family: var(--font-serif-en);
-      font-size: 0.8rem;
-      letter-spacing: 0.15em;
+      font-size: 1rem;
+      font-weight: 600; /* + / − 記号を太く表示 */
+      line-height: 1;
       color: var(--text-dim);
       padding: 0.3rem 0.8rem;
       border: 0.5px solid var(--border-color);
       transition: var(--transition-smooth);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
+
     .chara-toggle-trigger:hover {
       color: var(--accent-white);
       border-color: var(--border-light);
@@ -1164,7 +1168,7 @@
         <span class="section-category" id="worldDetailCategory">World Archive</span>
         <h1 class="section-title" id="worldDetailTitle">World Name</h1>
         <p class="section-desc" id="worldDetailDesc"></p>
-        <div id="worldDetailLinkContainer"></div>
+        <div id="worldDetailLinkContainer" style="margin-top: 0.8rem;"></div>
       </div>
 
       <h2 style="font-family: var(--font-serif-en); font-size: 1.2rem; letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 1.5rem;">CHARACTERS</h2>
@@ -1600,13 +1604,11 @@
       const container = document.getElementById('homeWorldsContainer');
       container.innerHTML = worldData.map(w => `
         <div style="margin-bottom: 3.5rem;">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid var(--border-color); padding-bottom:1rem; margin-bottom:1rem; flex-wrap:wrap; gap:1rem;">
-            <div>
-              <h2 style="font-family:var(--font-serif-en); font-size:1.8rem; font-weight:300; color:var(--accent-white);">${w.title}</h2>
+          <div style="border-bottom:1px solid var(--border-color); padding-bottom:1rem; margin-bottom:1rem;">
+            <h2 style="font-family:var(--font-serif-en); font-size:1.8rem; font-weight:300; color:var(--accent-white);">${w.title}</h2>
+            <div style="display:flex; gap:0.75rem; align-items:center; margin-top:0.8rem; flex-wrap:wrap;">
               ${w.plotUrl ? `<a href="${w.plotUrl}" target="_blank" class="plot-link-btn">プロットはこちら ▶</a>` : ''}
-            </div>
-            <div style="display:flex; gap:0.75rem; align-items:center;">
-              <button class="chara-toggle-trigger" id="charaToggleBtn-${w.id}" onclick="toggleHomeCharaGrid('${w.id}')">[ + ]</button>
+              <button class="chara-toggle-trigger" id="charaToggleBtn-${w.id}" onclick="toggleHomeCharaGrid('${w.id}')">+</button>
             </div>
           </div>
           
@@ -1638,10 +1640,10 @@
       const isOpen = container.classList.contains('open');
       if (isOpen) {
         container.classList.remove('open');
-        btn.textContent = '[ + ]';
+        btn.textContent = '+';
       } else {
         container.classList.add('open');
-        btn.textContent = '[ − ]';
+        btn.textContent = '−';
       }
     }
 
