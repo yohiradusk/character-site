@@ -1,64 +1,43 @@
 backend:
   name: git-gateway
-  branch: main # または master (GitHubの標準ブランチ名)
+  branch: main # お使いのGitHubのメインブランチ名 (main または master)
 
-media_folder: "images/uploads" # 画像が保存されるフォルダ
-public_folder: "/images/uploads" # サイトから画像を参照するパス
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
 
 collections:
-  # ==========================================
-  # 世界観・キャラクター管理
-  # ==========================================
   - name: "worlds"
-    label: "世界観・キャラクター"
+    label: "世界観・キャラクター管理"
     folder: "content/worlds"
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "世界観ID", name: "id", widget: "string", hint: "半角英数字（例: world-a）" }
+      - { label: "世界観ID (英数字)", name: "id", widget: "string" }
       - { label: "世界観名", name: "title", widget: "string" }
-      - { label: "サブタイトル", name: "subtitle", widget: "string", required: false }
-      - { label: "世界観の解説", name: "description", widget: "text" }
-      - label: "所属キャラクター一覧"
+      - { label: "世界観の解説・概要", name: "description", widget: "text", required: false }
+      - label: "所属キャラクター"
         name: "characters"
         widget: "list"
         fields:
-          - { label: "キャラクターID", name: "id", widget: "string" }
+          - { label: "キャラクターID (英数字)", name: "id", widget: "string" }
           - { label: "名前", name: "name", widget: "string" }
-          - { label: "ルビ / 英語表記", name: "ruby", widget: "string" }
-          - { label: "肩書・役割", name: "role", widget: "string" }
-          - { label: "縦長顔アイコン画像", name: "faceImage", widget: "image" }
-          - { label: "全身立ち絵画像", name: "fullImage", widget: "image" }
-          - { label: "年齢", name: "age", widget: "string" }
-          - { label: "身長", name: "height", widget: "string" }
-          - { label: "CV（声優等）", name: "cv", widget: "string", required: false }
+          - { label: "ルビ / 英語表記", name: "ruby", widget: "string", required: false }
+          - { label: "役割・肩書", name: "role", widget: "string", required: false }
+          - { label: "顔アイコン画像", name: "faceImage", widget: "image", required: false }
+          - { label: "全身立ち絵画像", name: "fullImage", widget: "image", required: false }
+          - { label: "年齢", name: "age", widget: "string", required: false }
+          - { label: "身長", name: "height", widget: "string", required: false }
           - { label: "好きなもの", name: "likes", widget: "string", required: false }
           - { label: "嫌いなもの", name: "dislikes", widget: "string", required: false }
           - { label: "台詞・キャッチコピー", name: "quote", widget: "string", required: false }
-          - { label: "詳細プロフィール・設定", name: "description", widget: "text" }
-          - label: "カラーパレット (HEXコード3色)"
-            name: "colors"
-            widget: "list"
-            field: { label: "カラーコード", name: "color", widget: "string" }
-          - label: "キャラクターギャラリー画像"
-            name: "gallery"
-            widget: "list"
-            required: false
-            fields:
-              - { label: "イラスト画像", name: "url", widget: "image" }
-              - { label: "タイトル", name: "title", widget: "string", required: false }
-              - { label: "キャプション", name: "caption", widget: "string", required: false }
+          - { label: "詳細プロフィール・設定", name: "description", widget: "text", required: false }
 
-  # ==========================================
-  # ファンアート管理
-  # ==========================================
   - name: "fanarts"
-    label: "ファンアート"
+    label: "ファンアート管理"
     folder: "content/fanarts"
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "作品名（分類用）", name: "work", widget: "string", hint: "例: 作品A" }
+      - { label: "作品名 (カテゴリ用)", name: "work", widget: "string" }
       - { label: "イラスト画像", name: "url", widget: "image" }
-      - { label: "イラストタイトル", name: "title", widget: "string" }
-      - { label: "キャラクター名など", name: "caption", widget: "string", required: false }
+      - { label: "タイトル", name: "title", widget: "string" }
