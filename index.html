@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OC ARCHIVE ✳</title>
+
+    <!-- Google Fonts: Serif for high-fashion typography & Noto Serif JP for elegant Japanese body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Serif+JP:wght@300;400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* ==========================================================================
+           1. MONOCHROME DESIGN SYSTEM
+           ========================================================================== */
+        :root {
+            /* Pure Monochrome Background Palette */
+            --bg-root: #0a0a0c;
+            --bg-sidebar: #0f0f12;
+            --bg-card: #141418;
+            --bg-card-hover: #1c1c22;
+            --bg-modal: #121215;
+
+            /* Crisp White & Grayscale Typography */
+            --text-main: #ffffff;
+            --text-sub: #a1a1aa;
+            --text-muted: #666673;
+
+            /* Borders & Division Lines */
+            --border: #27272a;
+            --border-hover: #52525b;
+
+            /* Typography Families */
+            --font-serif: 'Cormorant Garamond', 'Noto Serif JP', serif;
+            --font-ja: 'Noto Serif JP', serif;
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+
+            /* UI Layout Dimensions */
+            --sidebar-width: 290px;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+
+            --transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-root);
+            color: var(--text-main);
+            font-family: var(--font-ja);
+            line-height: 1.8;
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-family: inherit;
+            color: inherit;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        .serif-font {
+            font-family: var(--font-serif);
+        }
+
+        .sans-font {
+            font-family: var(--font-sans);
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-root);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #52525b;
+        }
+
+        /* ==========================================================================
+           2. SIDEBAR LAYOUT
+           ========================================================================== */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 3rem 2rem 2rem;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            cursor: pointer;
+            margin-bottom: 2.5rem;
+        }
+
+        .brand-title {
+            font-family: var(--font-serif);
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .brand-title span.star {
+            font-size: 1rem;
+            color: var(--text-sub);
+        }
+
+        .brand-sub {
+            font-family: var(--font-sans);
+            font-size: 0.68rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .stats-badge {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.65rem 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--font-sans);
+            font-size: 0.725rem;
+            color: var(--text-sub);
+            margin-bottom: 2.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        .stats-count {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .nav-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .nav-section-label {
+            font-family: var(--font-sans);
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .nav-item-btn {
+            width: 100%;
+            text-align: left;
+            padding: 0.6rem 0.85rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: var(--transition);
+            letter-spacing: 0.03em;
+        }
+
+        .nav-item-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .nav-item-btn.active {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border);
+            font-weight: 600;
+        }
+
+        .nav-item-btn .count-tag {
+            font-family: var(--font-sans);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .sidebar-footer {
+            font-family: var(--font-sans);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+            letter-spacing: 0.08em;
+        }
+
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: var(--bg-sidebar);
+            border-bottom: 1px solid var(--border);
+            padding: 0 1.5rem;
+            z-index: 150;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mobile-brand {
+            font-family: var(--font-serif);
+            font-size: 1.25rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* ==========================================================================
+           3. MAIN CONTENT AREA
+           ========================================================================== */
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            min-height: 100vh;
+            padding: 4rem 5rem;
+            max-width: 1350px;
+        }
+
+        .content-header {
+            margin-bottom: 3rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 2rem;
+        }
+
+        .content-subtitle {
+            font-family: var(--font-sans);
+            font-size: 0.725rem;
+            font-weight: 600;
+            letter-spacing: 0.25em;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .content-title {
+            font-family: var(--font-serif);
+            font-size: 2.4rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            line-height: 1.2;
+        }
+
+        .content-desc {
+            color: var(--text-sub);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            max-width: 760px;
+            line-height: 1.9;
+            white-space: pre-line;
+            font-weight: 300;
+        }
+
+        .view-section {
+            display: none;
+            animation: viewFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes viewFade {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ==========================================================================
+           4. HOME VIEW
+           ========================================================================== */
+        .hero-banner {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 3.5rem;
+            margin-bottom: 3.5rem;
+        }
+
+        .hero-banner h2 {
+            font-family: var(--font-serif);
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            letter-spacing: 0.03em;
+        }
+
+        .hero-banner p {
+            color: var(--text-sub);
+            font-size: 0.925rem;
+            line-height: 1.9;
+            max-width: 700px;
+            font-weight: 300;
+        }
+
+        .index-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .world-index-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .world-index-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-3px);
+            background: var(--bg-card-hover);
+        }
+
+        .world-index-card .card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .world-index-card .card-title {
+            font-family: var(--font-serif);
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .world-index-card .card-count {
+            font-family: var(--font-sans);
+            font-size: 0.7rem;
+            color: var(--text-sub);
+            border: 1px solid var(--border);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            letter-spacing: 0.05em;
+        }
+
+        .world-index-card .card-desc {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            line-height: 1.7;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            font-weight: 300;
+        }
+
+        /* ==========================================================================
+           5. CHARACTER CARDS & GALLERY
+           ========================================================================== */
+        .section-label-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-label-bar .label {
+            font-family: var(--font-sans);
+            font-size: 0.725rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .char-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .char-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .char-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-4px);
+            background: var(--bg-card-hover);
+        }
+
+        .char-card-thumb {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            overflow: hidden;
+            background: #18181c;
+        }
+
+        .char-card-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+            filter: grayscale(15%);
+        }
+
+        .char-card:hover .char-card-thumb img {
+            transform: scale(1.05);
+            filter: grayscale(0%);
+        }
+
+        .char-card-info {
+            padding: 1.1rem;
+        }
+
+        .char-card-role {
+            font-family: var(--font-sans);
+            font-size: 0.68rem;
+            color: var(--text-sub);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.2rem;
+        }
+
+        .char-card-name {
+            font-family: var(--font-serif);
+            font-size: 1.25rem;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .char-card-ruby {
+            font-family: var(--font-sans);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+        }
+
+        /* Sub Gallery Grid */
+        .sub-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .gallery-card {
+            aspect-ratio: 16 / 10;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .gallery-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+            filter: grayscale(20%);
+        }
+
+        .gallery-card:hover img {
+            transform: scale(1.04);
+            filter: grayscale(0%);
+        }
+
+        .gallery-card-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 10, 12, 0.85);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            text-align: center;
+            opacity: 0;
+            transition: var(--transition);
+            font-size: 0.875rem;
+            color: var(--text-main);
+            letter-spacing: 0.05em;
+        }
+
+        .gallery-card:hover .gallery-card-overlay {
+            opacity: 1;
+        }
+
+        /* ==========================================================================
+           6. FAN ART VIEW & MASONRY GRID
+           ========================================================================== */
+        .filter-bar {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-bottom: 2.5rem;
+        }
+
+        .filter-btn {
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.55rem 1.25rem;
+            border-radius: var(--radius-sm);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-sub);
+            transition: var(--transition);
+            letter-spacing: 0.08em;
+        }
+
+        .filter-btn:hover {
+            color: var(--text-main);
+            border-color: var(--border-hover);
+        }
+
+        .filter-btn.active {
+            background: var(--text-main);
+            color: var(--bg-root);
+            border-color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .masonry-grid {
+            column-count: 3;
+            column-gap: 1.25rem;
+        }
+
+        @media (max-width: 1100px) { .masonry-grid { column-count: 2; } }
+        @media (max-width: 600px)  { .masonry-grid { column-count: 1; } }
+
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 1.25rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .masonry-item:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-3px);
+        }
+
+        .masonry-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: grayscale(10%);
+            transition: var(--transition);
+        }
+
+        .masonry-item:hover img {
+            filter: grayscale(0%);
+        }
+
+        .masonry-info {
+            padding: 1rem 1.1rem;
+        }
+
+        .masonry-tag {
+            font-family: var(--font-sans);
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--text-sub);
+            letter-spacing: 0.1em;
+            margin-bottom: 0.2rem;
+        }
+
+        .masonry-title {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            font-weight: 400;
+        }
+
+        /* ==========================================================================
+           7. CHARACTER TABBED MODAL SYSTEM
+           ========================================================================== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(5, 5, 7, 0.92);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-box {
+            background: var(--bg-modal);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 1020px;
+            max-height: 90vh;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+            transform: scale(0.97);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-overlay.active .modal-box {
+            transform: scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            z-index: 20;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--text-main);
+            color: var(--bg-root);
+            border-color: var(--text-main);
+        }
+
+        /* Modal Header Navigation Bar (Tabs) */
+        .modal-nav-bar {
+            display: flex;
+            align-items: center;
+            padding: 1.25rem 2.5rem;
+            border-bottom: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.01);
+            gap: 1.5rem;
+        }
+
+        .modal-tab-btn {
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            color: var(--text-muted);
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .modal-tab-btn:hover {
+            color: var(--text-main);
+        }
+
+        .modal-tab-btn.active {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+        }
+
+        .modal-content-area {
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* Modal Tab Views */
+        .modal-tab-view {
+            display: none;
+        }
+
+        .modal-tab-view.active {
+            display: block;
+        }
+
+        /* Tab 1: Profile Grid */
+        .char-modal-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            min-height: 520px;
+        }
+
+        .char-modal-visual {
+            background: #0d0d10;
+            border-right: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2.5rem;
+            overflow: hidden;
+        }
+
+        .char-modal-visual img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            filter: grayscale(10%);
+        }
+
+        .char-modal-body {
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.75rem;
+        }
+
+        .char-modal-header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        .char-modal-role {
+            font-family: var(--font-sans);
+            font-size: 0.725rem;
+            font-weight: 600;
+            color: var(--text-sub);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+
+        .char-modal-name {
+            font-family: var(--font-serif);
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin: 0.2rem 0;
+            letter-spacing: 0.02em;
+        }
+
+        .char-modal-ruby {
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.85rem;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1.1rem 1.25rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+
+        .spec-item {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .spec-label {
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        .spec-val {
+            color: var(--text-main);
+            font-weight: 400;
+        }
+
+        .quote-box {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: 1.05rem;
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 2px solid var(--text-main);
+            padding: 1rem 1.25rem;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            line-height: 1.6;
+        }
+
+        .bio-text {
+            font-size: 0.875rem;
+            color: var(--text-sub);
+            line-height: 1.9;
+            white-space: pre-line;
+            font-weight: 300;
+        }
+
+        .color-palette-label {
+            font-family: var(--font-sans);
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.15em;
+            margin-bottom: 0.6rem;
+        }
+
+        .color-chips {
+            display: flex;
+            gap: 0.6rem;
+        }
+
+        .chip {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+        }
+
+        /* Tab 2: Individual Character Gallery */
+        .char-gallery-padding {
+            padding: 2.5rem;
+        }
+
+        .char-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .char-gallery-item {
+            aspect-ratio: 1;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .char-gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+            filter: grayscale(15%);
+        }
+
+        .char-gallery-item:hover img {
+            transform: scale(1.05);
+            filter: grayscale(0%);
+        }
+
+        .char-gallery-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 10, 12, 0.8);
+            backdrop-filter: blur(3px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.85rem;
+            text-align: center;
+            opacity: 0;
+            transition: var(--transition);
+            font-size: 0.8rem;
+            color: var(--text-main);
+        }
+
+        .char-gallery-item:hover .char-gallery-overlay {
+            opacity: 1;
+        }
+
+        /* Lightbox Modal */
+        .lightbox-box {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            max-width: 90vw;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 82vh;
+            object-fit: contain;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+        }
+
+        .lightbox-title {
+            margin-top: 1.25rem;
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            letter-spacing: 0.05em;
+        }
+
+        /* Responsive Settings */
+        @media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            .mobile-header {
+                display: flex;
+            }
+            .main-wrapper {
+                margin-left: 0;
+                padding: 6rem 1.75rem 3rem;
+            }
+            .char-modal-grid {
+                grid-template-columns: 1fr;
+            }
+            .char-modal-visual {
+                height: 280px;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==========================================
+        MOBILE HEADER BAR
+    =========================================== -->
+    <header class="mobile-header">
+        <div class="mobile-brand" onclick="switchView('home')">OC ARCHIVE ✳</div>
+        <button onclick="toggleMobileSidebar()" style="font-size: 1.2rem; color: var(--text-main);">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </header>
+
+
+    <!-- ==========================================
+        1. LEFT SIDEBAR (ARCHIVE NAVIGATION)
+    =========================================== -->
+    <aside class="sidebar" id="sidebar">
+        <div>
+            <!-- Brand Title -->
+            <div class="brand" onclick="switchView('home')">
+                <div class="brand-title">
+                    OC ARCHIVE <span class="star">✳</span>
+                </div>
+                <div class="brand-sub">Monochrome Showcase</div>
+            </div>
+
+            <!-- Global Counter Badge -->
+            <div class="stats-badge">
+                <span>INDEXED CHARAS</span>
+                <span class="stats-count" id="stat-char-count">0</span>
+            </div>
+
+            <!-- Navigation Links -->
+            <div class="nav-group">
+                <div>
+                    <div class="nav-section-label">OVERVIEW</div>
+                    <ul class="nav-list">
+                        <li>
+                            <button onclick="switchView('home')" id="nav-home" class="nav-item-btn active">
+                                <span><i class="fa-solid fa-border-all" style="margin-right: 0.5rem; font-size: 0.75rem;"></i> HOME</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <div class="nav-section-label">ORIGINAL WORLDS</div>
+                    <ul class="nav-list" id="sidebar-world-nav">
+                        <!-- Dynamically Inserted -->
+                    </ul>
+                </div>
+
+                <div>
+                    <div class="nav-section-label">GALLERY</div>
+                    <ul class="nav-list">
+                        <li>
+                            <button onclick="switchView('fanart')" id="nav-fanart" class="nav-item-btn">
+                                <span><i class="fa-solid fa-layer-group" style="margin-right: 0.5rem; font-size: 0.75rem;"></i> FAN ART</span>
+                                <span class="count-tag" id="stat-art-count">0</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer">
+            &copy; 2026 OC ARCHIVE. ALL RIGHTS RESERVED.
+        </div>
+    </aside>
+
+
+    <!-- ==========================================
+        2. MAIN CONTENT AREA
+    =========================================== -->
+    <main class="main-wrapper">
+
+        <!-- VIEW 1: HOME PAGE -->
+        <section id="view-home" class="view-section active">
+            <div class="content-header">
+                <div class="content-subtitle">CHARACTER ARCHIVE & GALLERY</div>
+                <h1 class="content-title">Personal Works Note</h1>
+            </div>
+
+            <div class="hero-banner">
+                <h2>Monochrome Archive</h2>
+                <p>創作キャラクターの世界観、詳細プロフィール、設定資料および二次創作ファンアートを納めたギャラリーサイトです。左メニューよりご希望のコンテンツを選択して閲覧ください。</p>
+            </div>
+
+            <div class="section-label-bar">
+                <div class="label">WORLDS LIST</div>
+            </div>
+            <div class="index-grid" id="home-world-grid">
+                <!-- JS Inserted -->
+            </div>
+
+            <div class="section-label-bar" style="margin-top: 2rem;">
+                <div class="label">INDEXED CHARACTERS</div>
+            </div>
+            <div class="char-grid" id="home-recent-chars">
+                <!-- JS Inserted -->
+            </div>
+        </section>
+
+
+        <!-- VIEW 2: WORLD SPECIFIC PAGE -->
+        <section id="view-world" class="view-section">
+            <div class="content-header">
+                <div class="content-subtitle" id="w-display-subtitle">WORLD // SUBTITLE</div>
+                <h1 class="content-title" id="w-display-title">World Title</h1>
+                <p class="content-desc" id="w-display-desc">World description paragraph goes here...</p>
+            </div>
+
+            <!-- Characters Grid (3:4 Vertical Icons) -->
+            <div class="section-label-bar">
+                <div class="label">CHARACTERS LIST</div>
+            </div>
+            <div class="char-grid" id="w-display-char-grid">
+                <!-- JS Inserted -->
+            </div>
+
+            <!-- World Specific Gallery -->
+            <div class="section-label-bar" style="margin-top: 2.5rem;">
+                <div class="label">WORLD GALLERY</div>
+            </div>
+            <div class="sub-gallery-grid" id="w-display-gallery-grid">
+                <!-- JS Inserted -->
+            </div>
+        </section>
+
+
+        <!-- VIEW 3: FAN ART MASONRY GALLERY -->
+        <section id="view-fanart" class="view-section">
+            <div class="content-header">
+                <div class="content-subtitle">SECONDARY WORKS</div>
+                <h1 class="content-title">Fan Art Gallery</h1>
+                <p class="content-desc">作品別に分類されたファンアート・二次創作イラストの一覧です。画像をクリックすると全画面で拡大表示されます。</p>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="filter-bar" id="fanart-filter-bar">
+                <!-- JS Inserted -->
+            </div>
+
+            <!-- Masonry Grid -->
+            <div class="masonry-grid" id="fanart-masonry-grid">
+                <!-- JS Inserted -->
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- ==========================================
+        3. CHARACTER TABBED MODAL
+    =========================================== -->
+    <div id="char-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('char-modal')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Modal Tab Navigation Bar -->
+            <div class="modal-nav-bar">
+                <button onclick="switchModalTab('profile')" id="mtab-btn-profile" class="modal-tab-btn active">
+                    [ PROFILE ]
+                </button>
+                <button onclick="switchModalTab('gallery')" id="mtab-btn-gallery" class="modal-tab-btn">
+                    [ GALLERY ]
+                </button>
+            </div>
+
+            <!-- Modal Content Area -->
+            <div class="modal-content-area">
+
+                <!-- TAB 1: PROFILE VIEW -->
+                <div id="mtab-view-profile" class="modal-tab-view active">
+                    <div class="char-modal-grid">
+                        <!-- Left Standing Illustration -->
+                        <div class="char-modal-visual">
+                            <img id="m-fullImage" src="" alt="Full Body Illustration">
+                        </div>
+
+                        <!-- Right Stats & Profile Body -->
+                        <div class="char-modal-body">
+                            <div class="char-modal-header">
+                                <div id="m-role" class="char-modal-role">ROLE / OCCUPATION</div>
+                                <h2 id="m-name" class="char-modal-name">Character Name</h2>
+                                <div id="m-ruby" class="char-modal-ruby">RUBY / ENGLISH NAME</div>
+                            </div>
+
+                            <!-- Spec Metadata Grid -->
+                            <div class="spec-grid">
+                                <div class="spec-item"><span class="spec-label">CV:</span> <span id="m-cv" class="spec-val">-</span></div>
+                                <div class="spec-item"><span class="spec-label">年齢:</span> <span id="m-age" class="spec-val">-</span></div>
+                                <div class="spec-item"><span class="spec-label">身長:</span> <span id="m-height" class="spec-val">-</span></div>
+                                <div class="spec-item"><span class="spec-label">好き:</span> <span id="m-likes" class="spec-val">-</span></div>
+                                <div class="spec-item" style="grid-column: span 2;"><span class="spec-label">苦手:</span> <span id="m-dislikes" class="spec-val">-</span></div>
+                            </div>
+
+                            <!-- Quote Callout -->
+                            <div id="m-quote" class="quote-box">
+                                「台詞が入ります」
+                            </div>
+
+                            <!-- Description Story -->
+                            <div>
+                                <div class="color-palette-label">PROFILE & STORY</div>
+                                <p id="m-desc" class="bio-text">設定テキスト</p>
+                            </div>
+
+                            <!-- Swatches -->
+                            <div>
+                                <div class="color-palette-label">COLOR PALETTE</div>
+                                <div class="color-chips" id="m-colors">
+                                    <!-- Dynamic Chips -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: INDIVIDUAL CHARACTER GALLERY VIEW -->
+                <div id="mtab-view-gallery" class="modal-tab-view">
+                    <div class="char-gallery-padding">
+                        <div class="color-palette-label" style="margin-bottom: 1.25rem;">CHARACTER ARTWORKS</div>
+                        <div class="char-gallery-grid" id="m-char-gallery-grid">
+                            <!-- Dynamically Injected Images -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==========================================
+        4. LIGHTBOX MODAL
+    =========================================== -->
+    <div id="lightbox-modal" class="modal-overlay" onclick="closeModal('lightbox-modal')">
+        <div class="lightbox-box">
+            <img id="l-img" src="" alt="Enlarged Artwork" class="lightbox-img">
+            <div id="l-title" class="lightbox-title"></div>
+        </div>
+    </div>
+
+
+    <!-- ==========================================
+        5. DATA & JAVASCRIPT LOGIC
+    =========================================== -->
+    <script>
+        /* ==========================================================================
+           【★データ変更ガイド★】
+           以下の `worldData` および `fanartData` をご自身の画像URL（例: "images/chara1.png"）
+           およびプロフィールテキストに書き換えてご利用ください。
+           ========================================================================== */
+
+        // ■ 1. 創作世界観・キャラクター・キャラ固有ギャラリーデータ
+        const worldData = [
+            {
+                id: "world-a",
+                name: "世界観A",
+                subtitle: "WORLD A // MONOCHROME NOIR",
+                description: "モノクロームの架空都市を舞台にしたハードボイルド作品。夜の街で活動する探偵と情報屋たちの群像劇。",
+                characters: [
+                    {
+                        id: "char-a1",
+                        name: "シルヴァ",
+                        ruby: "Silva / Detective",
+                        role: "私立探偵",
+                        faceImage: "https://placehold.co/600x800/141418/ffffff?text=Silva+Face", // 縦長顔アイコン (3:4)
+                        fullImage: "https://placehold.co/600x1000/141418/ffffff?text=Silva+Full", // 全身立ち絵
+                        cv: "未定",
+                        age: "28歳",
+                        height: "182cm",
+                        likes: "ブラックコーヒー、古いレコード",
+                        dislikes: "雨、長話",
+                        quote: "「真実なんてものは、いつだって味気ないものさ。」",
+                        description: "街の片隅で小さな探偵事務所を営む男。\n元警察の鑑識官であり、鋭い観察眼と洞察力を持つ。皮肉屋だが困っている人間を見捨てられない性格。",
+                        colors: ["#ffffff", "#a1a1aa", "#27272a", "#0a0a0c"],
+                        // ★キャラ個別のギャラリー画像★
+                        gallery: [
+                            { title: "事務所での一コマ", url: "https://placehold.co/800x800/141418/ffffff?text=Silva+Art+1" },
+                            { title: "ラフスケッチ・表情差分", url: "https://placehold.co/800x800/141418/a1a1aa?text=Silva+Art+2" },
+                            { title: "カットインイラスト", url: "https://placehold.co/800x800/141418/52525b?text=Silva+Art+3" }
+                        ]
+                    },
+                    {
+                        id: "char-a2",
+                        name: "クロエ",
+                        ruby: "Chloe / Informant",
+                        role: "フリー情報屋",
+                        faceImage: "https://placehold.co/600x800/141418/a1a1aa?text=Chloe+Face",
+                        fullImage: "https://placehold.co/600x1000/141418/a1a1aa?text=Chloe+Full",
+                        cv: "未定",
+                        age: "21歳",
+                        height: "160cm",
+                        likes: "チェス、ミントティー",
+                        dislikes: "無礼な顧客、寒さ",
+                        quote: "「情報はタダじゃないわ。いくら出すの？」",
+                        description: "裏社会のネットワークに通じる若き情報屋。\nシルヴァとは腐れ縁で、度々危険な調査協力を行っている。",
+                        colors: ["#a1a1aa", "#52525b", "#121215"],
+                        gallery: [
+                            { title: "情報収集中のクロエ", url: "https://placehold.co/800x800/141418/a1a1aa?text=Chloe+Art+1" }
+                        ]
+                    }
+                ],
+                gallery: [
+                    { title: "雨の路地裏", url: "https://placehold.co/800x500/141418/ffffff?text=Monochrome+City" },
+                    { title: "探偵事務所のインテリア", url: "https://placehold.co/800x500/141418/a1a1aa?text=Office+Interior" }
+                ]
+            },
+            {
+                id: "world-b",
+                name: "世界観B",
+                subtitle: "WORLD B // SILENT KINGDOM",
+                description: "静寂に包まれた滅びゆく王国の物語。古びた城塞と星空をテーマにしたダークファンタジー世界観。",
+                characters: [
+                    {
+                        id: "char-b1",
+                        name: "ヴィンセント",
+                        ruby: "Vincent / Royal Guard",
+                        role: "近衛騎士",
+                        faceImage: "https://placehold.co/600x800/141418/ffffff?text=Vincent+Face",
+                        fullImage: "https://placehold.co/600x1000/141418/ffffff?text=Vincent+Full",
+                        cv: "未定",
+                        age: "25歳",
+                        height: "185cm",
+                        likes: "星空の観察、チェス",
+                        dislikes: "無益な争い",
+                        quote: "「我が剣は、この静寂なる王国の誓いとともに。」",
+                        description: "王国最後の近衛騎士。滅びを迎える王国の記憶を未来へ紡ぐために旅を続けている。",
+                        colors: ["#ffffff", "#71717a", "#18181b"],
+                        gallery: [
+                            { title: "星空と剣", url: "https://placehold.co/800x800/141418/ffffff?text=Vincent+Art+1" }
+                        ]
+                    }
+                ],
+                gallery: [
+                    { title: "廃墟となった王城", url: "https://placehold.co/800x500/141418/ffffff?text=Castle+Ruins" }
+                ]
+            }
+        ];
+
+
+        // ■ 2. ファンアートカテゴリ（作品名）
+        const fanartCategories = [
+            { id: "all", name: "ALL WORKS" },
+            { id: "work-a", name: "作品A" },
+            { id: "work-b", name: "作品B" }
+        ];
+
+        // ■ 3. ファンアートギャラリーデータ
+        const fanartData = [
+            { catId: "work-a", title: "作品A：キービジュアル風イラスト", url: "https://placehold.co/600x800/141418/ffffff?text=FanArt+A1" },
+            { catId: "work-a", title: "作品A：キャラクターログ", url: "https://placehold.co/800x600/141418/a1a1aa?text=FanArt+A2" },
+            { catId: "work-b", title: "作品B：ポスター風デザイン", url: "https://placehold.co/600x900/141418/ffffff?text=FanArt+B1" },
+            { catId: "work-b", title: "作品B：モノクロ落書き", url: "https://placehold.co/700x700/141418/52525b?text=FanArt+B2" }
+        ];
+
+
+        /* ==========================================================================
+           SYSTEM SCRIPT & INTERACTION LOGIC
+           ========================================================================== */
+        let currentActiveWorldId = null;
+        let currentFanartCat = "all";
+        let activeModalChar = null;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            calculateGlobalStats();
+            renderSidebarWorldNav();
+            renderHomeView();
+            renderFanartView();
+        });
+
+        // 統計数値計算
+        function calculateGlobalStats() {
+            let charTotal = 0;
+            worldData.forEach(w => charTotal += w.characters.length);
+
+            document.getElementById('stat-char-count').innerText = charTotal;
+            document.getElementById('stat-art-count').innerText = fanartData.length;
+        }
+
+        // サイドバー世界観リスト生成
+        function renderSidebarWorldNav() {
+            const container = document.getElementById('sidebar-world-nav');
+            container.innerHTML = worldData.map(w => `
+                <li>
+                    <button onclick="switchWorldView('${w.id}')" id="nav-w-${w.id}" class="nav-item-btn">
+                        <span><i class="fa-regular fa-folder" style="margin-right: 0.5rem; font-size: 0.75rem;"></i> ${w.name}</span>
+                        <span class="count-tag">${w.characters.length}</span>
+                    </button>
+                </li>
+            `).join('');
+        }
+
+        // ビュー切り替え
+        function switchView(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item-btn').forEach(btn => btn.classList.remove('active'));
+
+            if (viewName === 'home') {
+                document.getElementById('view-home').classList.add('active');
+                document.getElementById('nav-home').classList.add('active');
+            } else if (viewName === 'fanart') {
+                document.getElementById('view-fanart').classList.add('active');
+                document.getElementById('nav-fanart').classList.add('active');
+            }
+
+            closeMobileSidebar();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 世界観ページ表示
+        function switchWorldView(worldId) {
+            currentActiveWorldId = worldId;
+            const world = worldData.find(w => w.id === worldId);
+
+            if (!world) return;
+
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById('view-world').classList.add('active');
+            const activeNav = document.getElementById(`nav-w-${worldId}`);
+            if (activeNav) activeNav.classList.add('active');
+
+            document.getElementById('w-display-subtitle').innerText = world.subtitle;
+            document.getElementById('w-display-title').innerText = world.name;
+            document.getElementById('w-display-desc').innerText = world.description;
+
+            // キャラカード一覧（3:4 縦長）
+            const charGrid = document.getElementById('w-display-char-grid');
+            charGrid.innerHTML = world.characters.map(c => `
+                <div class="char-card" onclick="openCharModal('${c.id}')">
+                    <div class="char-card-thumb">
+                        <img src="${c.faceImage}" alt="${c.name}">
+                    </div>
+                    <div class="char-card-info">
+                        <div class="char-card-role">${c.role}</div>
+                        <div class="char-card-name">${c.name}</div>
+                        <div class="char-card-ruby">${c.ruby}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            // 世界観ギャラリー
+            const galleryGrid = document.getElementById('w-display-gallery-grid');
+            if (world.gallery && world.gallery.length > 0) {
+                galleryGrid.innerHTML = world.gallery.map(g => `
+                    <div class="gallery-card" onclick="openLightbox('${g.url}', '${g.title}')">
+                        <img src="${g.url}" alt="${g.title}">
+                        <div class="gallery-card-overlay">${g.title}</div>
+                    </div>
+                `).join('');
+            } else {
+                galleryGrid.innerHTML = `<div style="color:var(--text-muted); font-size:0.85rem;">登録されている画像はありません。</div>`;
+            }
+
+            closeMobileSidebar();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // TOP（Home）描画
+        function renderHomeView() {
+            const worldGrid = document.getElementById('home-world-grid');
+            worldGrid.innerHTML = worldData.map(w => `
+                <div class="world-index-card" onclick="switchWorldView('${w.id}')">
+                    <div class="card-head">
+                        <div class="card-title">${w.name}</div>
+                        <div class="card-count">${w.characters.length} CHARAS</div>
+                    </div>
+                    <div class="card-desc">${w.description}</div>
+                </div>
+            `).join('');
+
+            const allChars = [];
+            worldData.forEach(w => allChars.push(...w.characters));
+            const recentGrid = document.getElementById('home-recent-chars');
+
+            recentGrid.innerHTML = allChars.slice(0, 6).map(c => `
+                <div class="char-card" onclick="openCharModal('${c.id}')">
+                    <div class="char-card-thumb">
+                        <img src="${c.faceImage}" alt="${c.name}">
+                    </div>
+                    <div class="char-card-info">
+                        <div class="char-card-role">${c.role}</div>
+                        <div class="char-card-name">${c.name}</div>
+                        <div class="char-card-ruby">${c.ruby}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ファンアート描画
+        function renderFanartView() {
+            const filterBar = document.getElementById('fanart-filter-bar');
+            filterBar.innerHTML = fanartCategories.map(c => `
+                <button onclick="filterFanart('${c.id}')" id="f-filter-${c.id}" class="filter-btn ${c.id === 'all' ? 'active' : ''}">
+                    ${c.name}
+                </button>
+            `).join('');
+
+            renderFanartItems();
+        }
+
+        function filterFanart(catId) {
+            currentFanartCat = catId;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`f-filter-${catId}`).classList.add('active');
+            renderFanartItems();
+        }
+
+        function renderFanartItems() {
+            const grid = document.getElementById('fanart-masonry-grid');
+            const items = currentFanartCat === 'all'
+                ? fanartData
+                : fanartData.filter(i => i.catId === currentFanartCat);
+
+            grid.innerHTML = items.map(item => `
+                <div class="masonry-item" onclick="openLightbox('${item.url}', '${item.title}')">
+                    <img src="${item.url}" alt="${item.title}">
+                    <div class="masonry-info">
+                        <div class="masonry-tag">${item.catId.toUpperCase()}</div>
+                        <div class="masonry-title">${item.title}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        /* ==========================================================================
+           MODAL & TABBED NAVIGATION LOGIC
+           ========================================================================== */
+        function openCharModal(charId) {
+            let targetChar = null;
+            worldData.forEach(w => {
+                const found = w.characters.find(c => c.id === charId);
+                if (found) targetChar = found;
+            });
+
+            if (!targetChar) return;
+            activeModalChar = targetChar;
+
+            // PROFILE データセット
+            document.getElementById('m-fullImage').src = targetChar.fullImage;
+            document.getElementById('m-role').innerText = targetChar.role;
+            document.getElementById('m-name').innerText = targetChar.name;
+            document.getElementById('m-ruby').innerText = targetChar.ruby;
+            document.getElementById('m-cv').innerText = targetChar.cv || '-';
+            document.getElementById('m-age').innerText = targetChar.age || '-';
+            document.getElementById('m-height').innerText = targetChar.height || '-';
+            document.getElementById('m-likes').innerText = targetChar.likes || '-';
+            document.getElementById('m-dislikes').innerText = targetChar.dislikes || '-';
+            document.getElementById('m-quote').innerText = targetChar.quote;
+            document.getElementById('m-desc').innerText = targetChar.description;
+
+            // カラーパレット
+            const chips = document.getElementById('m-colors');
+            chips.innerHTML = (targetChar.colors || []).map(hex => `
+                <div class="chip" style="background-color: ${hex};" title="${hex}"></div>
+            `).join('');
+
+            // キャラ固有ギャラリーセット
+            const charGalleryContainer = document.getElementById('m-char-gallery-grid');
+            if (targetChar.gallery && targetChar.gallery.length > 0) {
+                charGalleryContainer.innerHTML = targetChar.gallery.map(imgItem => `
+                    <div class="char-gallery-item" onclick="openLightbox('${imgItem.url}', '${imgItem.title}')">
+                        <img src="${imgItem.url}" alt="${imgItem.title}">
+                        <div class="char-gallery-overlay">${imgItem.title}</div>
+                    </div>
+                `).join('');
+            } else {
+                charGalleryContainer.innerHTML = `<div style="color:var(--text-muted); font-size:0.85rem; grid-column: 1/-1;">このキャラクターのギャラリー画像はありません。</div>`;
+            }
+
+            // モーダル初期化（Profileタブをアクティブ）
+            switchModalTab('profile');
+            document.getElementById('char-modal').classList.add('active');
+        }
+
+        // モーダル内タブ切り替え
+        function switchModalTab(tabName) {
+            document.querySelectorAll('.modal-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.modal-tab-view').forEach(view => view.classList.remove('active'));
+
+            document.getElementById(`mtab-btn-${tabName}`).classList.add('active');
+            document.getElementById(`mtab-view-${tabName}`).classList.add('active');
+        }
+
+        // ライトボックス表示
+        function openLightbox(url, title) {
+            document.getElementById('l-img').src = url;
+            document.getElementById('l-title').innerText = title;
+            document.getElementById('lightbox-modal').classList.add('active');
+        }
+
+        // モーダル閉じる
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // モバイルサイドバートグル
+        function toggleMobileSidebar() {
+            document.getElementById('sidebar').classList.toggle('mobile-open');
+        }
+
+        function closeMobileSidebar() {
+            document.getElementById('sidebar').classList.remove('mobile-open');
+        }
+    </script>
+</body>
+</html>
