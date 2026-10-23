@@ -275,25 +275,26 @@
       z-index: 90;
     }
 
-    /* 世界観プロット用リンクボタン（極細線・括弧なし） */
+    /* 世界観プロット用リンクボタン（フォント・枠線をトグルボタンと同等に調整） */
     .plot-link-btn {
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
-      font-family: var(--font-serif-jp);
+      font-family: var(--font-serif-en);
       font-size: 0.8rem;
-      letter-spacing: 0.1em;
-      color: var(--accent-white);
-      border: 0.5px solid var(--accent-white);
-      padding: 0.35rem 1rem;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      border: 0.5px solid var(--border-color);
+      padding: 0.3rem 0.8rem;
       margin-top: 0.8rem;
       transition: var(--transition-smooth);
       background-color: transparent;
     }
 
     .plot-link-btn:hover {
-      background-color: var(--accent-white);
-      color: #000;
+      color: var(--accent-white);
+      border-color: var(--border-light);
+      background-color: var(--bg-surface);
     }
 
     /* キャラ開閉トグルボタン */
@@ -1605,8 +1606,7 @@
               ${w.plotUrl ? `<a href="${w.plotUrl}" target="_blank" class="plot-link-btn">プロットはこちら ▶</a>` : ''}
             </div>
             <div style="display:flex; gap:0.75rem; align-items:center;">
-              <button class="chara-toggle-trigger" id="charaToggleBtn-${w.id}" onclick="toggleHomeCharaGrid('${w.id}')">[ + CHARACTERS ]</button>
-              <a href="#world-${w.id}" onclick="showWorldDetail('${w.id}')" style="font-size:0.8rem; font-family:var(--font-serif-en); color:var(--text-dim); letter-spacing:0.15em;">VIEW WORLD →</a>
+              <button class="chara-toggle-trigger" id="charaToggleBtn-${w.id}" onclick="toggleHomeCharaGrid('${w.id}')">[ + ]</button>
             </div>
           </div>
           
@@ -1638,10 +1638,10 @@
       const isOpen = container.classList.contains('open');
       if (isOpen) {
         container.classList.remove('open');
-        btn.textContent = '[ + CHARACTERS ]';
+        btn.textContent = '[ + ]';
       } else {
         container.classList.add('open');
-        btn.textContent = '[ − HIDE ]';
+        btn.textContent = '[ − ]';
       }
     }
 
