@@ -36,8 +36,8 @@
           "name": "田中タロ",
           "ruby": "tanaka taro",
           "role": "",
-          "faceImage": "https://placehold.co/600x800/121215/ffffff?text=FACE",
-          "fullImage": "https://placehold.co/800x1200/121215/ffffff?text=FULL",
+          "faceImage": "images/chara/test.png",
+          "fullImage": "images/chara/test.png",
           "age": "",
           "height": "",
           "quote": "テスト",
@@ -47,7 +47,9 @@
             "#71717a",
             "#121215"
           ],
-          "gallery": []
+          "gallery": [],
+          "likes": "",
+          "dislikes": ""
         }
       ]
     },
