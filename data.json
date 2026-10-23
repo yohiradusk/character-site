@@ -1,0 +1,70 @@
+{
+  "worlds": [
+    {
+      "id": "world-a",
+      "title": "世界観 A",
+      "subtitle": "District 09 Archive",
+      "description": "架空の近未来都市を舞台としたオリジナルキャラクター群のデータ。",
+      "characters": [
+        {
+          "id": "chara-1",
+          "name": "久世 律",
+          "ruby": "Ritsu Kuze",
+          "role": "情報屋 / Hacker",
+          "faceImage": "https://placehold.co/600x800/121215/ffffff?text=RITSU+FACE",
+          "fullImage": "https://placehold.co/800x1200/121215/ffffff?text=RITSU+FULL",
+          "age": "24",
+          "height": "178cm",
+          "likes": "珈琲, 旧型ガジェット",
+          "dislikes": "人ごみ, 雑音",
+          "quote": "「裏のデータが欲しいなら、相応の対価を用意しな。」",
+          "description": "スラム街の路地裏に事務所を構える不愛想な情報屋。観察力に長けており、裏社会の動向に詳しい。",
+          "colors": [
+            "#ffffff",
+            "#71717a",
+            "#18181b"
+          ],
+          "gallery": [
+            {
+              "url": "https://placehold.co/600x600/18181b/ffffff?text=Ritsu+Illust+1",
+              "title": "表情差分"
+            }
+          ]
+        },
+        {
+          "id": "chara-1792716845631",
+          "name": "田中タロ",
+          "ruby": "tanaka taro",
+          "role": "",
+          "faceImage": "https://placehold.co/600x800/121215/ffffff?text=FACE",
+          "fullImage": "https://placehold.co/800x1200/121215/ffffff?text=FULL",
+          "age": "",
+          "height": "",
+          "quote": "テスト",
+          "description": "",
+          "colors": [
+            "#ffffff",
+            "#71717a",
+            "#121215"
+          ],
+          "gallery": []
+        }
+      ]
+    },
+    {
+      "id": "world-b",
+      "title": "世界観 B",
+      "subtitle": "Fantasy Realm",
+      "description": "剣と魔法の世界観におけるオリジナルキャラクターの設定。",
+      "characters": []
+    }
+  ],
+  "fanarts": [
+    {
+      "id": "f1",
+      "work": "作品A",
+      "url": "https://placehold.co/600x800/121215/ffffff?text=Fanart+A1",
+      "title": "作品A イラスト 1"
+    }
+  ]
+}
