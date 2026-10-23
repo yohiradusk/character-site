@@ -275,6 +275,27 @@
       z-index: 90;
     }
 
+    /* 世界観プロット用リンクボタン */
+    .plot-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-serif-jp);
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      color: var(--accent-white);
+      border: 1px solid var(--accent-white);
+      padding: 0.4rem 1.2rem;
+      margin-top: 0.8rem;
+      transition: var(--transition-smooth);
+      background-color: transparent;
+    }
+
+    .plot-link-btn:hover {
+      background-color: var(--accent-white);
+      color: #000;
+    }
+
     /* ==========================================================================
        LAYOUT: MAIN CONTENT AREA
        ========================================================================== */
@@ -332,12 +353,12 @@
     }
 
     /* ==========================================================================
-       COMPONENTS: CHARACTER GRID (大型化プロポーション 1:1.35)
+       COMPONENTS: CHARACTER GRID (元の3:4縦長サイズに戻しました)
        ========================================================================== */
     .character-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); /* カードの幅を拡大 */
-      gap: 2.5rem;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 2rem;
       margin-top: 2rem;
     }
 
@@ -357,7 +378,7 @@
 
     .character-thumb-wrapper {
       width: 100%;
-      aspect-ratio: 1 / 1.35; /* 縦長化で顔・立ち絵を大きく表示 */
+      aspect-ratio: 3 / 4; /* 元の3:4に戻しました */
       overflow: hidden;
       background-color: #000;
       position: relative;
@@ -367,14 +388,13 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: top center; /* 顔がしっかり映るよう調整 */
       filter: grayscale(30%);
       transition: var(--transition-smooth);
     }
 
     .character-card:hover .character-thumb {
       filter: grayscale(0%);
-      transform: scale(1.05);
+      transform: scale(1.04);
     }
 
     .character-info {
@@ -481,7 +501,7 @@
     }
 
     /* ==========================================================================
-       MODAL SYSTEM (Character Detail & Lightbox)
+       MODAL SYSTEM (立ち絵エリアを大きく拡張)
        ========================================================================== */
     .modal-overlay {
       position: fixed;
@@ -510,9 +530,9 @@
       background-color: var(--bg-main);
       border: 1px solid var(--border-light);
       width: 100%;
-      max-width: 1050px;
-      height: 85vh;
-      max-height: 850px;
+      max-width: 1150px; /* 全体幅を拡張 */
+      height: 88vh; /* 高さを拡張 */
+      max-height: 900px;
       position: relative;
       display: flex;
       flex-direction: column;
@@ -546,7 +566,7 @@
     /* Character Modal Content */
     .chara-modal-body {
       display: grid;
-      grid-template-columns: 45% 55%;
+      grid-template-columns: 52% 48%; /* 立ち絵エリアを過半数の幅に設定して大きく表示 */
       height: 100%;
       width: 100%;
     }
@@ -557,16 +577,16 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 2rem;
+      padding: 1.5rem;
       position: relative;
       height: 100%;
       overflow: hidden;
     }
 
     .chara-full-img {
-      max-height: 100%;
-      max-width: 100%;
-      object-fit: contain;
+      height: 100%;
+      width: 100%;
+      object-fit: contain; /* 立ち絵全体を最大限大きく表示 */
     }
 
     .chara-info-area {
@@ -1025,7 +1045,7 @@
       .chara-visual-area {
         border-right: none;
         border-bottom: 1px solid var(--border-color);
-        height: 380px;
+        height: 420px;
       }
 
       .admin-modal-container {
@@ -1112,6 +1132,7 @@
         <span class="section-category" id="worldDetailCategory">World Archive</span>
         <h1 class="section-title" id="worldDetailTitle">World Name</h1>
         <p class="section-desc" id="worldDetailDesc"></p>
+        <div id="worldDetailLinkContainer"></div>
       </div>
 
       <h2 style="font-family: var(--font-serif-en); font-size: 1.2rem; letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 1.5rem;">CHARACTERS</h2>
@@ -1311,7 +1332,6 @@
           </div>
         </div>
         
-        <!-- 追加: ギャラリー画像入力欄 -->
         <div class="form-group">
           <label class="form-label">ギャラリー画像URL（複数ある場合はカンマ区切り）</label>
           <input type="text" id="adminCharaGallery" class="form-input" placeholder="images/gal1.png, images/gal2.png">
@@ -1371,6 +1391,10 @@
           <input type="text" id="adminWorldTitle" class="form-input" required placeholder="例: 世界観 C">
         </div>
         <div class="form-group">
+          <label class="form-label">外部リンクURL（プロット等 / 任意）</label>
+          <input type="text" id="adminWorldLink" class="form-input" placeholder="https://pixiv.net/... など">
+        </div>
+        <div class="form-group">
           <label class="form-label">概要・解説</label>
           <textarea id="adminWorldDesc" class="form-textarea" rows="4"></textarea>
         </div>
@@ -1419,6 +1443,7 @@
         title: "世界観 A",
         subtitle: "District 09 Archive",
         description: "架空の近未来都市を舞台としたオリジナルキャラクター群の設定データ。",
+        plotUrl: "https://example.com",
         characters: [
           {
             id: "chara-1",
@@ -1445,6 +1470,7 @@
         title: "世界観 B",
         subtitle: "Fantasy Realm",
         description: "剣と魔法の世界観におけるオリジナルキャラクターの設定。",
+        plotUrl: "",
         characters: []
       }
     ];
@@ -1543,7 +1569,10 @@
       container.innerHTML = worldData.map(w => `
         <div style="margin-bottom: 4rem;">
           <div style="display:flex; justify-content:space-between; align-items:baseline; border-bottom:1px solid var(--border-color); padding-bottom:0.75rem; margin-bottom:1.5rem;">
-            <h2 style="font-family:var(--font-serif-en); font-size:1.8rem; font-weight:300; color:var(--accent-white);">${w.title}</h2>
+            <div>
+              <h2 style="font-family:var(--font-serif-en); font-size:1.8rem; font-weight:300; color:var(--accent-white);">${w.title}</h2>
+              ${w.plotUrl ? `<a href="${w.plotUrl}" target="_blank" class="plot-link-btn">[ プロットはこちら ▶ ]</a>` : ''}
+            </div>
             <a href="#world-${w.id}" onclick="showWorldDetail('${w.id}')" style="font-size:0.8rem; font-family:var(--font-serif-en); color:var(--text-dim); letter-spacing:0.15em;">VIEW WORLD →</a>
           </div>
           <div class="character-grid">
@@ -1570,6 +1599,13 @@
       document.getElementById('worldDetailTitle').textContent = world.title;
       document.getElementById('worldDetailDesc').textContent = world.description || '';
       
+      const linkContainer = document.getElementById('worldDetailLinkContainer');
+      if (world.plotUrl) {
+        linkContainer.innerHTML = `<a href="${world.plotUrl}" target="_blank" class="plot-link-btn">[ プロットはこちら ▶ ]</a>`;
+      } else {
+        linkContainer.innerHTML = '';
+      }
+
       const grid = document.getElementById('worldCharacterGrid');
       grid.innerHTML = world.characters && world.characters.length > 0 ? world.characters.map(c => `
         <div class="character-card" onclick="openCharaModal('${world.id}', '${c.id}')">
@@ -1653,7 +1689,7 @@
       document.getElementById('modalCharaDesc').textContent = c.description || '';
 
       const paletteContainer = document.getElementById('modalCharaPalette');
-      paletteContainer.innerHTML = (c.colors || ['#ffffff', '#71717a', '#121215']).map(col => `
+      paletteContainer.innerHTML = (c.colors || ['#ffffff', '#71717a', '#18181b']).map(col => `
         <div class="color-swatch" style="background-color: ${col};" title="${col}"></div>
       `).join('');
 
@@ -1851,6 +1887,7 @@
         idInput.value = '';
         idInput.disabled = false;
         document.getElementById('adminWorldTitle').value = '';
+        document.getElementById('adminWorldLink').value = '';
         document.getElementById('adminWorldDesc').value = '';
         delBtn.style.display = 'none';
       } else {
@@ -1859,6 +1896,7 @@
           idInput.value = world.id;
           idInput.disabled = true;
           document.getElementById('adminWorldTitle').value = world.title || '';
+          document.getElementById('adminWorldLink').value = world.plotUrl || '';
           document.getElementById('adminWorldDesc').value = world.description || '';
           delBtn.style.display = 'block';
         }
@@ -1984,6 +2022,7 @@
         const newWorld = {
           id: document.getElementById('adminWorldId').value,
           title: document.getElementById('adminWorldTitle').value,
+          plotUrl: document.getElementById('adminWorldLink').value,
           description: document.getElementById('adminWorldDesc').value,
           characters: []
         };
@@ -1993,6 +2032,7 @@
         const world = worldData.find(w => w.id === selectVal);
         if (world) {
           world.title = document.getElementById('adminWorldTitle').value;
+          world.plotUrl = document.getElementById('adminWorldLink').value;
           world.description = document.getElementById('adminWorldDesc').value;
           alert('世界観情報を更新しました！');
         }
