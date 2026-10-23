@@ -275,7 +275,7 @@
       z-index: 90;
     }
 
-    /* 世界観プロット用リンクボタン */
+    /* 世界観プロット用リンクボタン（極細線・括弧なし） */
     .plot-link-btn {
       display: inline-flex;
       align-items: center;
@@ -284,8 +284,8 @@
       font-size: 0.8rem;
       letter-spacing: 0.1em;
       color: var(--accent-white);
-      border: 1px solid var(--accent-white);
-      padding: 0.4rem 1.2rem;
+      border: 0.5px solid var(--accent-white);
+      padding: 0.35rem 1rem;
       margin-top: 0.8rem;
       transition: var(--transition-smooth);
       background-color: transparent;
@@ -294,6 +294,37 @@
     .plot-link-btn:hover {
       background-color: var(--accent-white);
       color: #000;
+    }
+
+    /* キャラ開閉トグルボタン */
+    .chara-toggle-trigger {
+      font-family: var(--font-serif-en);
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      padding: 0.3rem 0.8rem;
+      border: 0.5px solid var(--border-color);
+      transition: var(--transition-smooth);
+    }
+    .chara-toggle-trigger:hover {
+      color: var(--accent-white);
+      border-color: var(--border-light);
+      background-color: var(--bg-surface);
+    }
+
+    /* キャラパネル折りたたみ用コンテナ */
+    .home-chara-container {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, margin-top 0.3s ease;
+      margin-top: 0;
+    }
+
+    .home-chara-container.open {
+      max-height: 2000px;
+      opacity: 1;
+      margin-top: 1.5rem;
     }
 
     /* ==========================================================================
@@ -353,13 +384,13 @@
     }
 
     /* ==========================================================================
-       COMPONENTS: CHARACTER GRID (元の3:4縦長サイズに戻しました)
+       COMPONENTS: CHARACTER GRID (3:4 Ratio)
        ========================================================================== */
     .character-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 2rem;
-      margin-top: 2rem;
+      margin-top: 1rem;
     }
 
     .character-card {
@@ -378,7 +409,7 @@
 
     .character-thumb-wrapper {
       width: 100%;
-      aspect-ratio: 3 / 4; /* 元の3:4に戻しました */
+      aspect-ratio: 3 / 4;
       overflow: hidden;
       background-color: #000;
       position: relative;
@@ -501,7 +532,7 @@
     }
 
     /* ==========================================================================
-       MODAL SYSTEM (立ち絵エリアを大きく拡張)
+       MODAL SYSTEM
        ========================================================================== */
     .modal-overlay {
       position: fixed;
@@ -530,8 +561,8 @@
       background-color: var(--bg-main);
       border: 1px solid var(--border-light);
       width: 100%;
-      max-width: 1150px; /* 全体幅を拡張 */
-      height: 88vh; /* 高さを拡張 */
+      max-width: 1150px;
+      height: 88vh;
       max-height: 900px;
       position: relative;
       display: flex;
@@ -566,7 +597,7 @@
     /* Character Modal Content */
     .chara-modal-body {
       display: grid;
-      grid-template-columns: 52% 48%; /* 立ち絵エリアを過半数の幅に設定して大きく表示 */
+      grid-template-columns: 52% 48%;
       height: 100%;
       width: 100%;
     }
@@ -586,7 +617,7 @@
     .chara-full-img {
       height: 100%;
       width: 100%;
-      object-fit: contain; /* 立ち絵全体を最大限大きく表示 */
+      object-fit: contain;
     }
 
     .chara-info-area {
@@ -1567,29 +1598,51 @@
     function renderHome() {
       const container = document.getElementById('homeWorldsContainer');
       container.innerHTML = worldData.map(w => `
-        <div style="margin-bottom: 4rem;">
-          <div style="display:flex; justify-content:space-between; align-items:baseline; border-bottom:1px solid var(--border-color); padding-bottom:0.75rem; margin-bottom:1.5rem;">
+        <div style="margin-bottom: 3.5rem;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid var(--border-color); padding-bottom:1rem; margin-bottom:1rem; flex-wrap:wrap; gap:1rem;">
             <div>
               <h2 style="font-family:var(--font-serif-en); font-size:1.8rem; font-weight:300; color:var(--accent-white);">${w.title}</h2>
-              ${w.plotUrl ? `<a href="${w.plotUrl}" target="_blank" class="plot-link-btn">[ プロットはこちら ▶ ]</a>` : ''}
+              ${w.plotUrl ? `<a href="${w.plotUrl}" target="_blank" class="plot-link-btn">プロットはこちら ▶</a>` : ''}
             </div>
-            <a href="#world-${w.id}" onclick="showWorldDetail('${w.id}')" style="font-size:0.8rem; font-family:var(--font-serif-en); color:var(--text-dim); letter-spacing:0.15em;">VIEW WORLD →</a>
+            <div style="display:flex; gap:0.75rem; align-items:center;">
+              <button class="chara-toggle-trigger" id="charaToggleBtn-${w.id}" onclick="toggleHomeCharaGrid('${w.id}')">[ + CHARACTERS ]</button>
+              <a href="#world-${w.id}" onclick="showWorldDetail('${w.id}')" style="font-size:0.8rem; font-family:var(--font-serif-en); color:var(--text-dim); letter-spacing:0.15em;">VIEW WORLD →</a>
+            </div>
           </div>
-          <div class="character-grid">
-            ${w.characters && w.characters.length > 0 ? w.characters.map(c => `
-              <div class="character-card" onclick="openCharaModal('${w.id}', '${c.id}')">
-                <div class="character-thumb-wrapper">
-                  <img src="${c.faceImage || 'https://placehold.co/600x800/121215/ffffff?text=NO+IMAGE'}" class="character-thumb" alt="${c.name}">
+          
+          <div class="home-chara-container" id="homeCharaContainer-${w.id}">
+            <div class="character-grid">
+              ${w.characters && w.characters.length > 0 ? w.characters.map(c => `
+                <div class="character-card" onclick="openCharaModal('${w.id}', '${c.id}')">
+                  <div class="character-thumb-wrapper">
+                    <img src="${c.faceImage || 'https://placehold.co/600x800/121215/ffffff?text=NO+IMAGE'}" class="character-thumb" alt="${c.name}">
+                  </div>
+                  <div class="character-info">
+                    <div class="character-name">${c.name}</div>
+                    <div class="character-ruby">${c.ruby || ''}</div>
+                  </div>
                 </div>
-                <div class="character-info">
-                  <div class="character-name">${c.name}</div>
-                  <div class="character-ruby">${c.ruby || ''}</div>
-                </div>
-              </div>
-            `).join('') : '<p style="color:var(--text-dim); font-size:0.85rem;">キャラクターが登録されていません。</p>'}
+              `).join('') : '<p style="color:var(--text-dim); font-size:0.85rem;">キャラクターが登録されていません。</p>'}
+            </div>
           </div>
         </div>
       `).join('');
+    }
+
+    /* トップ画面でのキャラカード開閉アコーディオン */
+    function toggleHomeCharaGrid(worldId) {
+      const container = document.getElementById(`homeCharaContainer-${worldId}`);
+      const btn = document.getElementById(`charaToggleBtn-${worldId}`);
+      if (!container || !btn) return;
+
+      const isOpen = container.classList.contains('open');
+      if (isOpen) {
+        container.classList.remove('open');
+        btn.textContent = '[ + CHARACTERS ]';
+      } else {
+        container.classList.add('open');
+        btn.textContent = '[ − HIDE ]';
+      }
     }
 
     function showWorldDetail(worldId) {
@@ -1601,7 +1654,7 @@
       
       const linkContainer = document.getElementById('worldDetailLinkContainer');
       if (world.plotUrl) {
-        linkContainer.innerHTML = `<a href="${world.plotUrl}" target="_blank" class="plot-link-btn">[ プロットはこちら ▶ ]</a>`;
+        linkContainer.innerHTML = `<a href="${world.plotUrl}" target="_blank" class="plot-link-btn">プロットはこちら ▶</a>`;
       } else {
         linkContainer.innerHTML = '';
       }
