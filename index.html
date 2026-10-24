@@ -275,7 +275,14 @@
       z-index: 90;
     }
 
-    /* 世界観プロット用リンクボタン */
+    /* 世界観プロット用リンクボタン（複数横並び対応） */
+    .plot-links-container {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 0.8rem;
+    }
+
     .plot-link-btn {
       display: inline-flex;
       align-items: center;
@@ -296,7 +303,7 @@
       background-color: var(--bg-surface);
     }
 
-    /* キャラ開閉トグルボタン（枠なし・さらに大きくしっかりと） */
+    /* キャラ開閉トグルボタン（位置固定・枠なし・大きく） */
     .chara-toggle-trigger {
       font-family: var(--font-serif-en);
       font-size: 2.2rem;
@@ -305,9 +312,12 @@
       color: var(--text-dim);
       background: none;
       border: none;
-      padding: 0.2rem 0.5rem;
+      padding: 0;
       transition: var(--transition-smooth);
       cursor: pointer;
+      position: absolute;
+      right: 0;
+      bottom: 1rem;
     }
 
     .chara-toggle-trigger:hover {
@@ -1161,11 +1171,11 @@
 
     <!-- SINGLE WORLD VIEW SECTION -->
     <section id="sec-world-detail" class="page-section">
-      <div class="section-header">
+      <div class="section-header" style="position: relative;">
         <span class="section-category" id="worldDetailCategory">World Archive</span>
         <h1 class="section-title" id="worldDetailTitle">World Name</h1>
         <p class="section-desc" id="worldDetailDesc"></p>
-        <div id="worldDetailLinkContainer" style="margin-top: 0.8rem;"></div>
+        <div id="worldDetailLinkContainer"></div>
       </div>
 
       <h2 style="font-family: var(--font-serif-en); font-size: 1.2rem; letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 1.5rem;">CHARACTERS</h2>
@@ -1370,6 +1380,11 @@
           <input type="text" id="adminCharaGallery" class="form-input" placeholder="images/gal1.png, images/gal2.png">
         </div>
 
+        <div class="form-group">
+          <label class="form-label">カラーパレット（カンマ区切りカラーコード）</label>
+          <input type="text" id="adminCharaPalette" class="form-input" placeholder="#ffffff, #71717a, #18181b">
+        </div>
+
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
           <div class="form-group">
             <label class="form-label">役割・肩書</label>
@@ -1424,12 +1439,44 @@
           <input type="text" id="adminWorldTitle" class="form-input" required placeholder="例: 世界観 C">
         </div>
         <div class="form-group">
-          <label class="form-label">外部リンクURL（プロット等 / 任意）</label>
-          <input type="text" id="adminWorldLink" class="form-input" placeholder="https://pixiv.net/... など">
-        </div>
-        <div class="form-group">
           <label class="form-label">概要・解説</label>
-          <textarea id="adminWorldDesc" class="form-textarea" rows="4"></textarea>
+          <textarea id="adminWorldDesc" class="form-textarea" rows="3"></textarea>
+        </div>
+
+        <!-- リンク 1 -->
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem;" class="form-group">
+          <div>
+            <label class="form-label">リンク1 文言</label>
+            <input type="text" id="adminWorldLink1Label" class="form-input" placeholder="プロットはこちら">
+          </div>
+          <div>
+            <label class="form-label">リンク1 URL</label>
+            <input type="text" id="adminWorldLink1Url" class="form-input" placeholder="https://...">
+          </div>
+        </div>
+
+        <!-- リンク 2 -->
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem;" class="form-group">
+          <div>
+            <label class="form-label">リンク2 文言</label>
+            <input type="text" id="adminWorldLink2Label" class="form-input" placeholder="設定資料">
+          </div>
+          <div>
+            <label class="form-label">リンク2 URL</label>
+            <input type="text" id="adminWorldLink2Url" class="form-input" placeholder="https://...">
+          </div>
+        </div>
+
+        <!-- リンク 3 -->
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem;" class="form-group">
+          <div>
+            <label class="form-label">リンク3 文言</label>
+            <input type="text" id="adminWorldLink3Label" class="form-input" placeholder="相関図">
+          </div>
+          <div>
+            <label class="form-label">リンク3 URL</label>
+            <input type="text" id="adminWorldLink3Url" class="form-input" placeholder="https://...">
+          </div>
         </div>
 
         <div class="btn-group-admin">
@@ -1476,7 +1523,9 @@
         title: "世界観 A",
         subtitle: "District 09 Archive",
         description: "架空の近未来都市を舞台としたオリジナルキャラクター群の設定データ。",
-        plotUrl: "https://example.com",
+        plotLinks: [
+          { label: "プロットはこちら ▶", url: "https://example.com" }
+        ],
         characters: [
           {
             id: "chara-1",
@@ -1503,7 +1552,7 @@
         title: "世界観 B",
         subtitle: "Fantasy Realm",
         description: "剣と魔法の世界観におけるオリジナルキャラクターの設定。",
-        plotUrl: "",
+        plotLinks: [],
         characters: []
       }
     ];
@@ -1524,7 +1573,16 @@
         const response = await fetch('data.json?v=' + Date.now());
         if (response.ok) {
           const fetchedData = await response.json();
-          if (fetchedData.worlds) worldData = fetchedData.worlds;
+          if (fetchedData.worlds) {
+            // 旧plotUrlデータの移行互換処理
+            worldData = fetchedData.worlds.map(w => {
+              if (!w.plotLinks && w.plotUrl) {
+                w.plotLinks = [{ label: "プロットはこちら ▶", url: w.plotUrl }];
+              }
+              if (!w.plotLinks) w.plotLinks = [];
+              return w;
+            });
+          }
           if (fetchedData.fanarts) fanartData = fetchedData.fanarts;
         } else {
           fallbackToLocalStorage();
@@ -1536,7 +1594,18 @@
     }
 
     function fallbackToLocalStorage() {
-      worldData = JSON.parse(localStorage.getItem('oc_worldData')) || initialWorldData;
+      const localWorlds = JSON.parse(localStorage.getItem('oc_worldData'));
+      if (localWorlds) {
+        worldData = localWorlds.map(w => {
+          if (!w.plotLinks && w.plotUrl) {
+            w.plotLinks = [{ label: "プロットはこちら ▶", url: w.plotUrl }];
+          }
+          if (!w.plotLinks) w.plotLinks = [];
+          return w;
+        });
+      } else {
+        worldData = initialWorldData;
+      }
       fanartData = JSON.parse(localStorage.getItem('oc_fanartData')) || initialFanartData;
     }
 
@@ -1599,35 +1668,41 @@
 
     function renderHome() {
       const container = document.getElementById('homeWorldsContainer');
-      container.innerHTML = worldData.map(w => `
-        <div style="margin-bottom: 3.5rem;">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid var(--border-color); padding-bottom:1rem; margin-bottom:1rem; gap:1rem;">
-            <div>
-              <h2 style="font-family:var(--font-serif-en); font-size:1.8rem; font-weight:300; color:var(--accent-white);">${w.title}</h2>
-              ${w.plotUrl ? `<div style="margin-top:0.8rem;"><a href="${w.plotUrl}" target="_blank" class="plot-link-btn">プロットはこちら ▶</a></div>` : ''}
+      container.innerHTML = worldData.map(w => {
+        const linksHtml = w.plotLinks && w.plotLinks.length > 0
+          ? `<div class="plot-links-container">${w.plotLinks.map(l => `<a href="${l.url}" target="_blank" class="plot-link-btn">${l.label || 'リンク'}</a>`).join('')}</div>`
+          : '';
+
+        return `
+          <div style="margin-bottom: 3.5rem;">
+            <div style="position:relative; border-bottom:1px solid var(--border-color); padding-bottom:1rem; margin-bottom:1rem; padding-right:3rem;">
+              <div>
+                <h2 style="font-family:var(--font-serif-en); font-size:1.8rem; font-weight:300; color:var(--accent-white);">${w.title}</h2>
+                ${linksHtml}
+              </div>
+              <div>
+                <button class="chara-toggle-trigger" id="charaToggleBtn-${w.id}" onclick="toggleHomeCharaGrid('${w.id}')">+</button>
+              </div>
             </div>
-            <div>
-              <button class="chara-toggle-trigger" id="charaToggleBtn-${w.id}" onclick="toggleHomeCharaGrid('${w.id}')">+</button>
+            
+            <div class="home-chara-container" id="homeCharaContainer-${w.id}">
+              <div class="character-grid">
+                ${w.characters && w.characters.length > 0 ? w.characters.map(c => `
+                  <div class="character-card" onclick="openCharaModal('${w.id}', '${c.id}')">
+                    <div class="character-thumb-wrapper">
+                      <img src="${c.faceImage || 'https://placehold.co/600x800/121215/ffffff?text=NO+IMAGE'}" class="character-thumb" alt="${c.name}">
+                    </div>
+                    <div class="character-info">
+                      <div class="character-name">${c.name}</div>
+                      <div class="character-ruby">${c.ruby || ''}</div>
+                    </div>
+                  </div>
+                `).join('') : '<p style="color:var(--text-dim); font-size:0.85rem;">キャラクターが登録されていません。</p>'}
+              </div>
             </div>
           </div>
-          
-          <div class="home-chara-container" id="homeCharaContainer-${w.id}">
-            <div class="character-grid">
-              ${w.characters && w.characters.length > 0 ? w.characters.map(c => `
-                <div class="character-card" onclick="openCharaModal('${w.id}', '${c.id}')">
-                  <div class="character-thumb-wrapper">
-                    <img src="${c.faceImage || 'https://placehold.co/600x800/121215/ffffff?text=NO+IMAGE'}" class="character-thumb" alt="${c.name}">
-                  </div>
-                  <div class="character-info">
-                    <div class="character-name">${c.name}</div>
-                    <div class="character-ruby">${c.ruby || ''}</div>
-                  </div>
-                </div>
-              `).join('') : '<p style="color:var(--text-dim); font-size:0.85rem;">キャラクターが登録されていません。</p>'}
-            </div>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     /* トップ画面でのキャラカード開閉アコーディオン */
@@ -1654,8 +1729,8 @@
       document.getElementById('worldDetailDesc').textContent = world.description || '';
       
       const linkContainer = document.getElementById('worldDetailLinkContainer');
-      if (world.plotUrl) {
-        linkContainer.innerHTML = `<a href="${world.plotUrl}" target="_blank" class="plot-link-btn">プロットはこちら ▶</a>`;
+      if (world.plotLinks && world.plotLinks.length > 0) {
+        linkContainer.innerHTML = `<div class="plot-links-container">${world.plotLinks.map(l => `<a href="${l.url}" target="_blank" class="plot-link-btn">${l.label || 'リンク'}</a>`).join('')}</div>`;
       } else {
         linkContainer.innerHTML = '';
       }
@@ -1889,6 +1964,7 @@
         document.getElementById('adminCharaFace').value = '';
         document.getElementById('adminCharaFull').value = '';
         document.getElementById('adminCharaGallery').value = '';
+        document.getElementById('adminCharaPalette').value = '';
         document.getElementById('adminCharaRole').value = '';
         document.getElementById('adminCharaAge').value = '';
         document.getElementById('adminCharaHeight').value = '';
@@ -1910,6 +1986,7 @@
             document.getElementById('adminCharaFace').value = c.faceImage || '';
             document.getElementById('adminCharaFull').value = c.fullImage || '';
             document.getElementById('adminCharaGallery').value = c.gallery ? c.gallery.map(g => g.url).join(', ') : '';
+            document.getElementById('adminCharaPalette').value = c.colors ? c.colors.join(', ') : '';
             document.getElementById('adminCharaRole').value = c.role || '';
             document.getElementById('adminCharaAge').value = c.age || '';
             document.getElementById('adminCharaHeight').value = c.height || '';
@@ -1937,11 +2014,15 @@
       const delBtn = document.getElementById('adminWorldDeleteBtn');
       const idInput = document.getElementById('adminWorldId');
 
+      for (let i = 1; i <= 3; i++) {
+        document.getElementById(`adminWorldLink${i}Label`).value = '';
+        document.getElementById(`adminWorldLink${i}Url`).value = '';
+      }
+
       if (val === 'NEW') {
         idInput.value = '';
         idInput.disabled = false;
         document.getElementById('adminWorldTitle').value = '';
-        document.getElementById('adminWorldLink').value = '';
         document.getElementById('adminWorldDesc').value = '';
         delBtn.style.display = 'none';
       } else {
@@ -1950,8 +2031,16 @@
           idInput.value = world.id;
           idInput.disabled = true;
           document.getElementById('adminWorldTitle').value = world.title || '';
-          document.getElementById('adminWorldLink').value = world.plotUrl || '';
           document.getElementById('adminWorldDesc').value = world.description || '';
+          
+          if (world.plotLinks && Array.isArray(world.plotLinks)) {
+            world.plotLinks.forEach((l, idx) => {
+              if (idx < 3) {
+                document.getElementById(`adminWorldLink${idx + 1}Label`).value = l.label || '';
+                document.getElementById(`adminWorldLink${idx + 1}Url`).value = l.url || '';
+              }
+            });
+          }
           delBtn.style.display = 'block';
         }
       }
@@ -2004,6 +2093,9 @@
       const galleryInput = document.getElementById('adminCharaGallery').value;
       const galleryArr = galleryInput ? galleryInput.split(',').map(url => ({ url: url.trim() })).filter(g => g.url) : [];
 
+      const paletteInput = document.getElementById('adminCharaPalette').value;
+      const colorsArr = paletteInput ? paletteInput.split(',').map(c => c.trim()).filter(c => c) : ['#ffffff', '#71717a', '#18181b'];
+
       const charaData = {
         name: document.getElementById('adminCharaName').value,
         ruby: document.getElementById('adminCharaRuby').value,
@@ -2011,6 +2103,7 @@
         faceImage: document.getElementById('adminCharaFace').value || 'https://placehold.co/600x800/121215/ffffff?text=FACE',
         fullImage: document.getElementById('adminCharaFull').value || 'https://placehold.co/800x1200/121215/ffffff?text=FULL',
         gallery: galleryArr,
+        colors: colorsArr,
         age: document.getElementById('adminCharaAge').value,
         height: document.getElementById('adminCharaHeight').value,
         likes: document.getElementById('adminCharaLikes').value,
@@ -2021,7 +2114,6 @@
 
       if (selectVal === 'NEW') {
         charaData.id = 'chara-' + Date.now();
-        charaData.colors = ['#ffffff', '#71717a', '#18181b'];
         if (!targetWorld.characters) targetWorld.characters = [];
         targetWorld.characters.push(charaData);
         alert('キャラクターを登録しました！');
@@ -2072,11 +2164,20 @@
       e.preventDefault();
       const selectVal = document.getElementById('adminWorldSelect').value;
 
+      const plotLinksArr = [];
+      for (let i = 1; i <= 3; i++) {
+        const label = document.getElementById(`adminWorldLink${i}Label`).value.trim();
+        const url = document.getElementById(`adminWorldLink${i}Url`).value.trim();
+        if (url) {
+          plotLinksArr.push({ label: label || 'プロットはこちら ▶', url: url });
+        }
+      }
+
       if (selectVal === 'NEW') {
         const newWorld = {
           id: document.getElementById('adminWorldId').value,
           title: document.getElementById('adminWorldTitle').value,
-          plotUrl: document.getElementById('adminWorldLink').value,
+          plotLinks: plotLinksArr,
           description: document.getElementById('adminWorldDesc').value,
           characters: []
         };
@@ -2086,7 +2187,7 @@
         const world = worldData.find(w => w.id === selectVal);
         if (world) {
           world.title = document.getElementById('adminWorldTitle').value;
-          world.plotUrl = document.getElementById('adminWorldLink').value;
+          world.plotLinks = plotLinksArr;
           world.description = document.getElementById('adminWorldDesc').value;
           alert('世界観情報を更新しました！');
         }
