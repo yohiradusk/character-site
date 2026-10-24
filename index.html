@@ -523,15 +523,17 @@
       transition: var(--transition-smooth);
     }
 
+    /* 強力なぼかしエフェクト */
     .masonry-img.blurred {
-      filter: blur(12px) grayscale(20%);
+      filter: blur(24px) grayscale(30%);
+      transform: scale(1.05); /* 端の透過対策 */
     }
 
     .masonry-item:hover .masonry-img {
       filter: grayscale(0%);
     }
     .masonry-item:hover .masonry-img.blurred {
-      filter: blur(6px) grayscale(0%);
+      filter: blur(10px) grayscale(0%);
     }
 
     .masonry-caption {
@@ -542,12 +544,30 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      background-color: var(--bg-surface);
+      position: relative;
+      z-index: 2;
     }
 
     .masonry-work {
       font-family: var(--font-serif-en);
       font-size: 0.75rem;
       color: var(--text-dim);
+    }
+
+    /* 多枚数バッジ */
+    .multi-pic-badge {
+      font-family: var(--font-serif-en);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--accent-white);
+      background: rgba(0, 0, 0, 0.75);
+      border: 1px solid var(--border-light);
+      padding: 2px 6px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 5;
     }
 
     /* ==========================================================================
@@ -841,15 +861,17 @@
       transition: var(--transition-smooth);
     }
 
+    /* 強力ぼかし */
     .chara-gallery-item img.blurred {
-      filter: blur(10px);
+      filter: blur(24px);
+      transform: scale(1.05);
     }
 
     .chara-gallery-item:hover img {
       transform: scale(1.05);
     }
     .chara-gallery-item:hover img.blurred {
-      filter: blur(4px);
+      filter: blur(10px);
     }
 
     /* Image Lightbox */
@@ -876,7 +898,7 @@
     }
 
     /* ==========================================================================
-       ADMIN CONTROL PANEL (Password Modal & Editor)
+       ADMIN CONTROL PANEL (Password Modal & Dynamic Image Inputs)
        ========================================================================== */
     .admin-modal-container {
       max-width: 750px;
@@ -915,6 +937,78 @@
       outline: none;
       border-color: var(--border-light);
       background-color: var(--bg-surface-hover);
+    }
+
+    /* 動的画像リストUI */
+    .image-list-builder {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .image-input-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background-color: var(--bg-surface);
+      padding: 0.6rem 0.8rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .image-input-row .form-input {
+      flex: 1;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.85rem;
+    }
+
+    .blur-checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .blur-checkbox-label input[type="checkbox"] {
+      width: 1.1rem;
+      height: 1.1rem;
+      accent-color: var(--accent-white);
+      cursor: pointer;
+    }
+
+    .btn-remove-row {
+      color: #ef4444;
+      font-size: 1.1rem;
+      padding: 0 0.4rem;
+      line-height: 1;
+      transition: var(--transition-smooth);
+    }
+    .btn-remove-row:hover {
+      opacity: 0.7;
+    }
+
+    .btn-add-img-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-serif-en);
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      color: var(--text-main);
+      background-color: var(--bg-surface);
+      border: 1px dashed var(--border-light);
+      padding: 0.5rem 1rem;
+      width: 100%;
+      justify-content: center;
+      transition: var(--transition-smooth);
+    }
+    .btn-add-img-row:hover {
+      background-color: var(--bg-surface-hover);
+      border-color: var(--accent-white);
     }
 
     .btn-group-admin {
@@ -1390,14 +1484,11 @@
           </div>
         </div>
         
+        <!-- 動的ギャラリー画像入力リスト -->
         <div class="form-group">
-          <label class="form-label">ギャラリー画像URL（複数ある場合はカンマ区切り）</label>
-          <input type="text" id="adminCharaGallery" class="form-input" placeholder="images/gal1.png, images/gal2.png">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">ギャラリー画像のぼかし設定（カンマ区切りで true / false）</label>
-          <input type="text" id="adminCharaGalleryBlur" class="form-input" placeholder="true, false （左から順番に対応）">
+          <label class="form-label">ギャラリー画像一覧</label>
+          <div id="charaGalleryBuilder" class="image-list-builder"></div>
+          <button type="button" class="btn-add-img-row" onclick="addCharaGalleryRow()">＋ 画像欄を追加</button>
         </div>
 
         <div class="form-group">
@@ -1516,16 +1607,15 @@
           <input type="text" id="adminFanartWork" class="form-input" required placeholder="例: 作品A">
         </div>
         <div class="form-group">
-          <label class="form-label">イラスト画像URL</label>
-          <input type="text" id="adminFanartUrl" class="form-input" required placeholder="images/fanart1.png または URL">
-        </div>
-        <div class="form-group">
           <label class="form-label">タイトル / キャプション</label>
           <input type="text" id="adminFanartTitle" class="form-input" placeholder="例: 記念イラスト">
         </div>
-        <div class="form-group" style="display: flex; align-items: center; gap: 0.75rem;">
-          <input type="checkbox" id="adminFanartBlur" style="width: 1.2rem; height: 1.2rem; accent-color: var(--accent-white); cursor: pointer;">
-          <label class="form-label" style="margin-bottom: 0; cursor: pointer;" for="adminFanartBlur">画像にぼかしをかける (Blur)</label>
+
+        <!-- 動的ファンアート画像入力リスト -->
+        <div class="form-group">
+          <label class="form-label">イラスト画像一覧（複数追加可能）</label>
+          <div id="fanartImagesBuilder" class="image-list-builder"></div>
+          <button type="button" class="btn-add-img-row" onclick="addFanartImageRow()">＋ 画像欄を追加</button>
         </div>
 
         <div class="btn-group-admin">
@@ -1582,7 +1672,14 @@
     ];
 
     const initialFanartData = [
-      { id: "f1", work: "作品A", url: "https://placehold.co/600x800/121215/ffffff?text=Fanart+A1", title: "作品A イラスト 1", blur: false }
+      { 
+        id: "f1", 
+        work: "作品A", 
+        title: "作品A イラスト 1",
+        images: [
+          { url: "https://placehold.co/600x800/121215/ffffff?text=Fanart+A1", blur: false }
+        ]
+      }
     ];
 
     let worldData = [];
@@ -1607,7 +1704,7 @@
             });
           }
           if (fetchedData.fanarts) {
-            fanartData = fetchedData.fanarts.map(f => ({ ...f, blur: !!f.blur }));
+            fanartData = fetchedData.fanarts.map(f => normalizeFanartData(f));
           }
         } else {
           fallbackToLocalStorage();
@@ -1633,10 +1730,18 @@
       }
       const localFanarts = JSON.parse(localStorage.getItem('oc_fanartData'));
       if (localFanarts) {
-        fanartData = localFanarts.map(f => ({ ...f, blur: !!f.blur }));
+        fanartData = localFanarts.map(f => normalizeFanartData(f));
       } else {
         fanartData = initialFanartData;
       }
+    }
+
+    // 単一url形式からの旧データ移行用ヘルパー関数
+    function normalizeFanartData(f) {
+      if (!f.images || !Array.isArray(f.images)) {
+        f.images = f.url ? [{ url: f.url, blur: !!f.blur }] : [];
+      }
+      return f;
     }
 
     function saveData() {
@@ -1790,15 +1895,34 @@
 
       const filtered = activeFanartWork === 'ALL' ? fanartData : fanartData.filter(f => f.work === activeFanartWork);
       const grid = document.getElementById('fanartGrid');
-      grid.innerHTML = filtered.map(f => `
-        <div class="masonry-item" onclick="openLightbox('${f.url}', '${f.title} (${f.work})')">
-          <img src="${f.url}" class="masonry-img ${f.blur ? 'blurred' : ''}" alt="${f.title}">
-          <div class="masonry-caption">
-            <span>${f.title}</span>
-            <span class="masonry-work">${f.work}</span>
+      
+      grid.innerHTML = filtered.map(f => {
+        const cover = (f.images && f.images.length > 0) ? f.images[0] : { url: '', blur: false };
+        const multiBadge = (f.images && f.images.length > 1) ? `<span class="multi-pic-badge">${f.images.length} P</span>` : '';
+        
+        return `
+          <div class="masonry-item" onclick="openFanartGalleryModal('${f.id}')">
+            ${multiBadge}
+            <img src="${cover.url}" class="masonry-img ${cover.blur ? 'blurred' : ''}" alt="${f.title}">
+            <div class="masonry-caption">
+              <span>${f.title}</span>
+              <span class="masonry-work">${f.work}</span>
+            </div>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
+    }
+
+    function openFanartGalleryModal(fanartId) {
+      const item = fanartData.find(f => f.id === fanartId);
+      if (!item || !item.images || item.images.length === 0) return;
+
+      if (item.images.length === 1) {
+        openLightbox(item.images[0].url, `${item.title} (${item.work})`);
+      } else {
+        // 複数枚ある場合は1枚目を表示（次々に切り替え可能）
+        openLightbox(item.images[0].url, `${item.title} (1/${item.images.length})`);
+      }
     }
 
     function filterFanart(work) {
@@ -1983,18 +2107,51 @@
       onFanartSelectChange();
     }
 
+    /* --------------------------------------------------------------------------
+       DYNAMIC DYNAMIC IMAGE BUILDERS (CHARA GALLERY & FANART)
+       -------------------------------------------------------------------------- */
+    function addCharaGalleryRow(url = '', blur = false) {
+      const builder = document.getElementById('charaGalleryBuilder');
+      const row = document.createElement('div');
+      row.className = 'image-input-row chara-gallery-row';
+      row.innerHTML = `
+        <input type="text" class="form-input chara-gal-url" placeholder="images/gal.png または URL" value="${url}">
+        <label class="blur-checkbox-label">
+          <input type="checkbox" class="chara-gal-blur" ${blur ? 'checked' : ''}>
+          ぼかす
+        </label>
+        <button type="button" class="btn-remove-row" onclick="this.parentElement.remove()">×</button>
+      `;
+      builder.appendChild(row);
+    }
+
+    function addFanartImageRow(url = '', blur = false) {
+      const builder = document.getElementById('fanartImagesBuilder');
+      const row = document.createElement('div');
+      row.className = 'image-input-row fanart-img-row';
+      row.innerHTML = `
+        <input type="text" class="form-input fanart-img-url" placeholder="images/fanart.png または URL" value="${url}">
+        <label class="blur-checkbox-label">
+          <input type="checkbox" class="fanart-img-blur" ${blur ? 'checked' : ''}>
+          ぼかす
+        </label>
+        <button type="button" class="btn-remove-row" onclick="this.parentElement.remove()">×</button>
+      `;
+      builder.appendChild(row);
+    }
+
     function onCharaSelectChange() {
       const val = document.getElementById('adminCharaSelect').value;
       const delBtn = document.getElementById('adminCharaDeleteBtn');
       const cloneBtn = document.getElementById('adminCharaCloneBtn');
+      const galBuilder = document.getElementById('charaGalleryBuilder');
+      galBuilder.innerHTML = '';
 
       if (val === 'NEW') {
         document.getElementById('adminCharaName').value = '';
         document.getElementById('adminCharaRuby').value = '';
         document.getElementById('adminCharaFace').value = '';
         document.getElementById('adminCharaFull').value = '';
-        document.getElementById('adminCharaGallery').value = '';
-        document.getElementById('adminCharaGalleryBlur').value = '';
         document.getElementById('adminCharaPalette').value = '';
         document.getElementById('adminCharaRole').value = '';
         document.getElementById('adminCharaAge').value = '';
@@ -2005,6 +2162,7 @@
         document.getElementById('adminCharaDesc').value = '';
         delBtn.style.display = 'none';
         cloneBtn.style.display = 'none';
+        addCharaGalleryRow(); // 空の入力欄を1つ生成
       } else {
         const [wId, cId] = val.split('::');
         const world = worldData.find(w => w.id === wId);
@@ -2016,8 +2174,6 @@
             document.getElementById('adminCharaRuby').value = c.ruby || '';
             document.getElementById('adminCharaFace').value = c.faceImage || '';
             document.getElementById('adminCharaFull').value = c.fullImage || '';
-            document.getElementById('adminCharaGallery').value = c.gallery ? c.gallery.map(g => g.url).join(', ') : '';
-            document.getElementById('adminCharaGalleryBlur').value = c.gallery ? c.gallery.map(g => g.blur ? 'true' : 'false').join(', ') : '';
             document.getElementById('adminCharaPalette').value = c.colors ? c.colors.join(', ') : '';
             document.getElementById('adminCharaRole').value = c.role || '';
             document.getElementById('adminCharaAge').value = c.age || '';
@@ -2026,6 +2182,13 @@
             document.getElementById('adminCharaDislikes').value = c.dislikes || '';
             document.getElementById('adminCharaQuote').value = c.quote || '';
             document.getElementById('adminCharaDesc').value = c.description || '';
+
+            if (c.gallery && c.gallery.length > 0) {
+              c.gallery.forEach(g => addCharaGalleryRow(g.url, g.blur));
+            } else {
+              addCharaGalleryRow();
+            }
+
             delBtn.style.display = 'block';
             cloneBtn.style.display = 'block';
           }
@@ -2081,20 +2244,26 @@
     function onFanartSelectChange() {
       const val = document.getElementById('adminFanartSelect').value;
       const delBtn = document.getElementById('adminFanartDeleteBtn');
+      const imgBuilder = document.getElementById('fanartImagesBuilder');
+      imgBuilder.innerHTML = '';
 
       if (val === 'NEW') {
         document.getElementById('adminFanartWork').value = '';
-        document.getElementById('adminFanartUrl').value = '';
         document.getElementById('adminFanartTitle').value = '';
-        document.getElementById('adminFanartBlur').checked = false;
         delBtn.style.display = 'none';
+        addFanartImageRow(); // 空の入力欄を1つ生成
       } else {
         const f = fanartData.find(item => item.id === val);
         if (f) {
           document.getElementById('adminFanartWork').value = f.work || '';
-          document.getElementById('adminFanartUrl').value = f.url || '';
           document.getElementById('adminFanartTitle').value = f.title || '';
-          document.getElementById('adminFanartBlur').checked = !!f.blur;
+
+          if (f.images && f.images.length > 0) {
+            f.images.forEach(img => addFanartImageRow(img.url, img.blur));
+          } else {
+            addFanartImageRow();
+          }
+
           delBtn.style.display = 'block';
         }
       }
@@ -2124,16 +2293,16 @@
       const targetWorld = worldData.find(w => w.id === targetWorldId);
       if (!targetWorld) return;
 
-      const galleryInput = document.getElementById('adminCharaGallery').value;
-      const galleryBlurInput = document.getElementById('adminCharaGalleryBlur').value;
-      const urls = galleryInput ? galleryInput.split(',').map(url => url.trim()).filter(url => url) : [];
-      const blurs = galleryBlurInput ? galleryBlurInput.split(',').map(b => b.trim().toLowerCase() === 'true') : [];
-
-      const galleryArr = urls.map((url, idx) => ({
-        url: url,
-        title: '',
-        blur: blurs[idx] || false
-      }));
+      // 動的ギャラリー画像リストの収集
+      const galleryRows = document.querySelectorAll('.chara-gallery-row');
+      const galleryArr = [];
+      galleryRows.forEach(row => {
+        const url = row.querySelector('.chara-gal-url').value.trim();
+        const blur = row.querySelector('.chara-gal-blur').checked;
+        if (url) {
+          galleryArr.push({ url, title: '', blur });
+        }
+      });
 
       const paletteInput = document.getElementById('adminCharaPalette').value;
       const colorsArr = paletteInput ? paletteInput.split(',').map(c => c.trim()).filter(c => c) : ['#ffffff', '#71717a', '#18181b'];
@@ -2257,11 +2426,21 @@
       e.preventDefault();
       const selectVal = document.getElementById('adminFanartSelect').value;
 
+      // 動的ファンアート画像リストの収集
+      const imgRows = document.querySelectorAll('.fanart-img-row');
+      const imagesArr = [];
+      imgRows.forEach(row => {
+        const url = row.querySelector('.fanart-img-url').value.trim();
+        const blur = row.querySelector('.fanart-img-blur').checked;
+        if (url) {
+          imagesArr.push({ url, blur });
+        }
+      });
+
       const fanartObj = {
         work: document.getElementById('adminFanartWork').value,
-        url: document.getElementById('adminFanartUrl').value,
         title: document.getElementById('adminFanartTitle').value,
-        blur: document.getElementById('adminFanartBlur').checked
+        images: imagesArr
       };
 
       if (selectVal === 'NEW') {
