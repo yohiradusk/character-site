@@ -523,8 +523,15 @@
       transition: var(--transition-smooth);
     }
 
+    .masonry-img.blurred {
+      filter: blur(12px) grayscale(20%);
+    }
+
     .masonry-item:hover .masonry-img {
       filter: grayscale(0%);
+    }
+    .masonry-item:hover .masonry-img.blurred {
+      filter: blur(6px) grayscale(0%);
     }
 
     .masonry-caption {
@@ -824,6 +831,7 @@
       border: 1px solid var(--border-color);
       overflow: hidden;
       cursor: pointer;
+      position: relative;
     }
 
     .chara-gallery-item img {
@@ -833,8 +841,15 @@
       transition: var(--transition-smooth);
     }
 
+    .chara-gallery-item img.blurred {
+      filter: blur(10px);
+    }
+
     .chara-gallery-item:hover img {
       transform: scale(1.05);
+    }
+    .chara-gallery-item:hover img.blurred {
+      filter: blur(4px);
     }
 
     /* Image Lightbox */
@@ -1381,6 +1396,11 @@
         </div>
 
         <div class="form-group">
+          <label class="form-label">ギャラリー画像のぼかし設定（カンマ区切りで true / false）</label>
+          <input type="text" id="adminCharaGalleryBlur" class="form-input" placeholder="true, false （左から順番に対応）">
+        </div>
+
+        <div class="form-group">
           <label class="form-label">カラーパレット（カンマ区切りカラーコード）</label>
           <input type="text" id="adminCharaPalette" class="form-input" placeholder="#ffffff, #71717a, #18181b">
         </div>
@@ -1503,6 +1523,10 @@
           <label class="form-label">タイトル / キャプション</label>
           <input type="text" id="adminFanartTitle" class="form-input" placeholder="例: 記念イラスト">
         </div>
+        <div class="form-group" style="display: flex; align-items: center; gap: 0.75rem;">
+          <input type="checkbox" id="adminFanartBlur" style="width: 1.2rem; height: 1.2rem; accent-color: var(--accent-white); cursor: pointer;">
+          <label class="form-label" style="margin-bottom: 0; cursor: pointer;" for="adminFanartBlur">画像にぼかしをかける (Blur)</label>
+        </div>
 
         <div class="btn-group-admin">
           <button type="submit" class="btn-submit">SAVE / UPDATE FANART</button>
@@ -1542,7 +1566,7 @@
             description: "スラム街の路地裏に事務所を構える不愛想な情報屋。観察力に長けており、裏社会の動向に詳しい。",
             colors: ["#ffffff", "#71717a", "#18181b"],
             gallery: [
-              { url: "https://placehold.co/600x600/18181b/ffffff?text=Ritsu+Illust+1", title: "表情差分" }
+              { url: "https://placehold.co/600x600/18181b/ffffff?text=Ritsu+Illust+1", title: "表情差分", blur: false }
             ]
           }
         ]
@@ -1558,7 +1582,7 @@
     ];
 
     const initialFanartData = [
-      { id: "f1", work: "作品A", url: "https://placehold.co/600x800/121215/ffffff?text=Fanart+A1", title: "作品A イラスト 1" }
+      { id: "f1", work: "作品A", url: "https://placehold.co/600x800/121215/ffffff?text=Fanart+A1", title: "作品A イラスト 1", blur: false }
     ];
 
     let worldData = [];
@@ -1574,7 +1598,6 @@
         if (response.ok) {
           const fetchedData = await response.json();
           if (fetchedData.worlds) {
-            // 旧plotUrlデータの移行互換処理
             worldData = fetchedData.worlds.map(w => {
               if (!w.plotLinks && w.plotUrl) {
                 w.plotLinks = [{ label: "プロットはこちら ▶", url: w.plotUrl }];
@@ -1583,7 +1606,9 @@
               return w;
             });
           }
-          if (fetchedData.fanarts) fanartData = fetchedData.fanarts;
+          if (fetchedData.fanarts) {
+            fanartData = fetchedData.fanarts.map(f => ({ ...f, blur: !!f.blur }));
+          }
         } else {
           fallbackToLocalStorage();
         }
@@ -1606,7 +1631,12 @@
       } else {
         worldData = initialWorldData;
       }
-      fanartData = JSON.parse(localStorage.getItem('oc_fanartData')) || initialFanartData;
+      const localFanarts = JSON.parse(localStorage.getItem('oc_fanartData'));
+      if (localFanarts) {
+        fanartData = localFanarts.map(f => ({ ...f, blur: !!f.blur }));
+      } else {
+        fanartData = initialFanartData;
+      }
     }
 
     function saveData() {
@@ -1762,7 +1792,7 @@
       const grid = document.getElementById('fanartGrid');
       grid.innerHTML = filtered.map(f => `
         <div class="masonry-item" onclick="openLightbox('${f.url}', '${f.title} (${f.work})')">
-          <img src="${f.url}" class="masonry-img" alt="${f.title}">
+          <img src="${f.url}" class="masonry-img ${f.blur ? 'blurred' : ''}" alt="${f.title}">
           <div class="masonry-caption">
             <span>${f.title}</span>
             <span class="masonry-work">${f.work}</span>
@@ -1826,7 +1856,7 @@
       if (c.gallery && c.gallery.length > 0) {
         galGrid.innerHTML = c.gallery.map(g => `
           <div class="chara-gallery-item" onclick="openLightbox('${g.url}', '${g.title || c.name}')">
-            <img src="${g.url}" alt="">
+            <img src="${g.url}" class="${g.blur ? 'blurred' : ''}" alt="">
           </div>
         `).join('');
       } else {
@@ -1964,6 +1994,7 @@
         document.getElementById('adminCharaFace').value = '';
         document.getElementById('adminCharaFull').value = '';
         document.getElementById('adminCharaGallery').value = '';
+        document.getElementById('adminCharaGalleryBlur').value = '';
         document.getElementById('adminCharaPalette').value = '';
         document.getElementById('adminCharaRole').value = '';
         document.getElementById('adminCharaAge').value = '';
@@ -1986,6 +2017,7 @@
             document.getElementById('adminCharaFace').value = c.faceImage || '';
             document.getElementById('adminCharaFull').value = c.fullImage || '';
             document.getElementById('adminCharaGallery').value = c.gallery ? c.gallery.map(g => g.url).join(', ') : '';
+            document.getElementById('adminCharaGalleryBlur').value = c.gallery ? c.gallery.map(g => g.blur ? 'true' : 'false').join(', ') : '';
             document.getElementById('adminCharaPalette').value = c.colors ? c.colors.join(', ') : '';
             document.getElementById('adminCharaRole').value = c.role || '';
             document.getElementById('adminCharaAge').value = c.age || '';
@@ -2054,6 +2086,7 @@
         document.getElementById('adminFanartWork').value = '';
         document.getElementById('adminFanartUrl').value = '';
         document.getElementById('adminFanartTitle').value = '';
+        document.getElementById('adminFanartBlur').checked = false;
         delBtn.style.display = 'none';
       } else {
         const f = fanartData.find(item => item.id === val);
@@ -2061,6 +2094,7 @@
           document.getElementById('adminFanartWork').value = f.work || '';
           document.getElementById('adminFanartUrl').value = f.url || '';
           document.getElementById('adminFanartTitle').value = f.title || '';
+          document.getElementById('adminFanartBlur').checked = !!f.blur;
           delBtn.style.display = 'block';
         }
       }
@@ -2091,7 +2125,15 @@
       if (!targetWorld) return;
 
       const galleryInput = document.getElementById('adminCharaGallery').value;
-      const galleryArr = galleryInput ? galleryInput.split(',').map(url => ({ url: url.trim() })).filter(g => g.url) : [];
+      const galleryBlurInput = document.getElementById('adminCharaGalleryBlur').value;
+      const urls = galleryInput ? galleryInput.split(',').map(url => url.trim()).filter(url => url) : [];
+      const blurs = galleryBlurInput ? galleryBlurInput.split(',').map(b => b.trim().toLowerCase() === 'true') : [];
+
+      const galleryArr = urls.map((url, idx) => ({
+        url: url,
+        title: '',
+        blur: blurs[idx] || false
+      }));
 
       const paletteInput = document.getElementById('adminCharaPalette').value;
       const colorsArr = paletteInput ? paletteInput.split(',').map(c => c.trim()).filter(c => c) : ['#ffffff', '#71717a', '#18181b'];
@@ -2218,7 +2260,8 @@
       const fanartObj = {
         work: document.getElementById('adminFanartWork').value,
         url: document.getElementById('adminFanartUrl').value,
-        title: document.getElementById('adminFanartTitle').value
+        title: document.getElementById('adminFanartTitle').value,
+        blur: document.getElementById('adminFanartBlur').checked
       };
 
       if (selectVal === 'NEW') {
