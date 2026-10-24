@@ -555,21 +555,6 @@
       color: var(--text-dim);
     }
 
-    /* 多枚数バッジ */
-    .multi-pic-badge {
-      font-family: var(--font-serif-en);
-      font-size: 0.65rem;
-      letter-spacing: 0.1em;
-      color: var(--accent-white);
-      background: rgba(0, 0, 0, 0.75);
-      border: 1px solid var(--border-light);
-      padding: 2px 6px;
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      z-index: 5;
-    }
-
     /* ==========================================================================
        MODAL SYSTEM
        ========================================================================== */
@@ -1896,33 +1881,24 @@
       const filtered = activeFanartWork === 'ALL' ? fanartData : fanartData.filter(f => f.work === activeFanartWork);
       const grid = document.getElementById('fanartGrid');
       
-      grid.innerHTML = filtered.map(f => {
-        const cover = (f.images && f.images.length > 0) ? f.images[0] : { url: '', blur: false };
-        const multiBadge = (f.images && f.images.length > 1) ? `<span class="multi-pic-badge">${f.images.length} P</span>` : '';
-        
-        return `
-          <div class="masonry-item" onclick="openFanartGalleryModal('${f.id}')">
-            ${multiBadge}
-            <img src="${cover.url}" class="masonry-img ${cover.blur ? 'blurred' : ''}" alt="${f.title}">
-            <div class="masonry-caption">
-              <span>${f.title}</span>
-              <span class="masonry-work">${f.work}</span>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
+      let htmlContent = '';
+      filtered.forEach(f => {
+        if (f.images && f.images.length > 0) {
+          f.images.forEach(img => {
+            htmlContent += `
+              <div class="masonry-item" onclick="openLightbox('${img.url}', '${f.title} (${f.work})')">
+                <img src="${img.url}" class="masonry-img ${img.blur ? 'blurred' : ''}" alt="${f.title}">
+                <div class="masonry-caption">
+                  <span>${f.title}</span>
+                  <span class="masonry-work">${f.work}</span>
+                </div>
+              </div>
+            `;
+          });
+        }
+      });
 
-    function openFanartGalleryModal(fanartId) {
-      const item = fanartData.find(f => f.id === fanartId);
-      if (!item || !item.images || item.images.length === 0) return;
-
-      if (item.images.length === 1) {
-        openLightbox(item.images[0].url, `${item.title} (${item.work})`);
-      } else {
-        // 複数枚ある場合は1枚目を表示（次々に切り替え可能）
-        openLightbox(item.images[0].url, `${item.title} (1/${item.images.length})`);
-      }
+      grid.innerHTML = htmlContent || '<p style="color:var(--text-dim); font-size:0.85rem;">登録されているファンアートはありません。</p>';
     }
 
     function filterFanart(work) {
@@ -2108,7 +2084,7 @@
     }
 
     /* --------------------------------------------------------------------------
-       DYNAMIC DYNAMIC IMAGE BUILDERS (CHARA GALLERY & FANART)
+       DYNAMIC IMAGE BUILDERS (CHARA GALLERY & FANART)
        -------------------------------------------------------------------------- */
     function addCharaGalleryRow(url = '', blur = false) {
       const builder = document.getElementById('charaGalleryBuilder');
