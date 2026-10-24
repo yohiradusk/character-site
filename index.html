@@ -275,7 +275,7 @@
       z-index: 90;
     }
 
-    /* 世界観プロット用リンクボタン（複数横並び対応） */
+    /* 世界観プロット用リンクボタン */
     .plot-links-container {
       display: flex;
       gap: 0.75rem;
@@ -303,7 +303,7 @@
       background-color: var(--bg-surface);
     }
 
-    /* キャラ開閉トグルボタン（位置固定・枠なし・大きく） */
+    /* キャラ開閉トグルボタン */
     .chara-toggle-trigger {
       font-family: var(--font-serif-en);
       font-size: 2.2rem;
@@ -463,7 +463,7 @@
     }
 
     /* ==========================================================================
-       COMPONENTS: FANART MASONRY GRID & TABS
+       COMPONENTS: FANART SQUARE GRID & TABS (1:1 Ratio)
        ========================================================================== */
     .filter-tabs {
       display: flex;
@@ -494,49 +494,61 @@
       background-color: var(--bg-surface);
     }
 
-    .masonry-grid {
-      columns: 3 260px;
-      column-gap: 1.5rem;
+    /* 正方形（1:1）統一のグリッドレイアウト */
+    .square-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.5rem;
     }
 
-    .masonry-item {
-      break-inside: avoid;
-      margin-bottom: 1.5rem;
+    .square-item {
       background-color: var(--bg-surface);
       border: 1px solid var(--border-color);
       overflow: hidden;
       cursor: pointer;
       position: relative;
       transition: var(--transition-smooth);
+      display: flex;
+      flex-direction: column;
     }
 
-    .masonry-item:hover {
+    .square-item:hover {
       border-color: var(--border-light);
-      transform: translateY(-2px);
+      transform: translateY(-3px);
     }
 
-    .masonry-img {
+    .square-img-wrapper {
       width: 100%;
-      height: auto;
-      display: block;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background-color: #000;
+      position: relative;
+    }
+
+    .square-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
       filter: grayscale(15%);
       transition: var(--transition-smooth);
     }
 
     /* 強力なぼかしエフェクト */
-    .masonry-img.blurred {
+    .square-img.blurred {
       filter: blur(24px) grayscale(30%);
-      transform: scale(1.05); /* 端の透過対策 */
+      transform: scale(1.08); /* 端の黒み・透過対策 */
     }
 
-    .masonry-item:hover .masonry-img {
+    .square-item:hover .square-img {
       filter: grayscale(0%);
+      transform: scale(1.04);
     }
-    .masonry-item:hover .masonry-img.blurred {
+    .square-item:hover .square-img.blurred {
       filter: blur(10px) grayscale(0%);
+      transform: scale(1.08);
     }
 
-    .masonry-caption {
+    .square-caption {
       padding: 0.8rem 1rem;
       font-size: 0.8rem;
       color: var(--text-muted);
@@ -549,7 +561,7 @@
       z-index: 2;
     }
 
-    .masonry-work {
+    .square-work {
       font-family: var(--font-serif-en);
       font-size: 0.75rem;
       color: var(--text-dim);
@@ -1290,7 +1302,7 @@
         <!-- Dynamically Populated -->
       </div>
 
-      <div class="masonry-grid" id="fanartGrid">
+      <div class="square-grid" id="fanartGrid">
         <!-- Dynamically Populated -->
       </div>
     </section>
@@ -1886,11 +1898,13 @@
         if (f.images && f.images.length > 0) {
           f.images.forEach(img => {
             htmlContent += `
-              <div class="masonry-item" onclick="openLightbox('${img.url}', '${f.title} (${f.work})')">
-                <img src="${img.url}" class="masonry-img ${img.blur ? 'blurred' : ''}" alt="${f.title}">
-                <div class="masonry-caption">
+              <div class="square-item" onclick="openLightbox('${img.url}', '${f.title} (${f.work})')">
+                <div class="square-img-wrapper">
+                  <img src="${img.url}" class="square-img ${img.blur ? 'blurred' : ''}" alt="${f.title}">
+                </div>
+                <div class="square-caption">
                   <span>${f.title}</span>
-                  <span class="masonry-work">${f.work}</span>
+                  <span class="square-work">${f.work}</span>
                 </div>
               </div>
             `;
